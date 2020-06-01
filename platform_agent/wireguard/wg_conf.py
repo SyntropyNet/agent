@@ -8,6 +8,7 @@ from pyroute2 import IPDB, WireGuard, IPRoute, NetlinkError
 from nacl.public import PrivateKey
 
 from platform_agent.cmd.lsmod import module_loaded
+from platform_agent.cmd.rt_table import get_available_rt_table
 from platform_agent.cmd.wg_show import get_wg_listen_port
 
 logger = logging.getLogger()
@@ -74,13 +75,16 @@ class WgConf():
         )
 
         listen_port = self.get_listening_port(ifname)
+        rt_table_id = get_available_rt_table()
+        self.create_rule(internal_ip, rt_table_id)
 
         return {
             "public_key": public_key,
-            "listen_port": listen_port
+            "listen_port": listen_port,
+            "rt_table_id": rt_table_id
         }
 
-    def add_peer(self, ifname, public_key, allowed_ips, gw_ipv4, endpoint_ipv4=None, endpoint_port=None):
+    def add_peer(self, ifname, public_key, allowed_ips, gw_ipv4, rt_table_id=None, endpoint_ipv4=None, endpoint_port=None):
         peer = {'public_key': public_key,
                 'endpoint_addr': endpoint_ipv4,
                 'endpoint_port': endpoint_port,
@@ -88,6 +92,8 @@ class WgConf():
                 'allowed_ips': allowed_ips}
         self.wg.set(ifname, peer=peer)
         self.ip_route_add(ifname, allowed_ips, gw_ipv4)
+        if rt_table_id:
+            self.create_routes(allowed_ips, gw_ipv4, rt_table_id)
         return
 
     def remove_peer(self, ifname, public_key, allowed_ips):
@@ -140,6 +146,17 @@ class WgConf():
         else:
             wg_info = self.wg.info(ifname)
             return wg_info['listen_port']
+
+    def create_rule(self, internal_ip, rt_table_id):
+        ip_route = IPRoute()
+        ip_route.flush_rules(table=rt_table_id)
+        ip_route.flush_routes(table=rt_table_id)
+        ip_route.rule('add', src=internal_ip, table=rt_table_id)
+
+    def create_routes(self, destination_ips, gw, rt_table_id):
+        ip_route = IPRoute()
+        for destination_ip in destination_ips:
+            ip_route.route('add', dst=destination_ip, gateway=gw, table=rt_table_id)
 
 
 class WireguardGo():

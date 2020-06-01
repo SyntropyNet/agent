@@ -31,3 +31,4 @@ class Config:
             for param in self._data[subject]:
                 os.environ[f"NOIA_{param.upper()}"] = self._data[subject][param]
 
+
