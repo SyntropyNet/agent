@@ -115,7 +115,7 @@ curl https://bitbucket.org/noianetwork-team/platform-agent/raw/master/systemd/no
 
 Create noia-agent directory:
 ```bash
-mkdir /etc/noia-agent
+mkdir /etc/systemd/system/noia-agent.service.d/
 chmod -R 600 /etc/noia-agent
 ```
 Download settings file:
@@ -135,7 +135,7 @@ Environment=NOIA_CONTROLLER_URL=app-controller-platform-agents.noia.network
 Environment=NOIA_ALLOWED_IPS=[{"10.0.44.0/24":"oracle_vpc"},{"192.168.111.2/32":"internal"}]
 #If using docker , NOIA_NETWORK_API=docker would allow agent to access docker networks for information.
 Environment=NOIA_NETWORK_API=none
-Environment=NOIA_NAME=Azure EU gateway
+Environment="NOIA_NAME=Azure EU gateway"
 Environment=NOIA_COUNTRY=Germany
 Environment=NOIA_CITY=Frankfurt
 #Select one of the categories from the list or default will be assigned
@@ -144,9 +144,10 @@ Environment=NOIA_CATEGORY=IoT
 #Select one of providers from the list or default will be assigned
 #'AWS', 'DigitalOcean', 'Microsoft Azure', 'Rackspace', 'Alibaba Cloud',
 #'Google Cloud Platform', 'Oracle Cloud', 'VMware', 'IBM Cloud', 'Vultr'.
-Environment=NOIA_PROVIDER =Microsoft Azure
+Environment="NOIA_PROVIDER=Microsoft Azure"
 Environment=NOIA_LAT=40.14
 Environment=NOIA_LON=-74.21
+Environment=NOIA_TAGS=Tag1,Tag2
 ```
 
 ```bash
