@@ -5,6 +5,7 @@ Pip is the package installer for Python. You can use pip to install packages fro
 `pip3 install platform-agent`
 #### 2. Create/Edit /etc/systemd/system/noia-agent.service.d/10-vars.conf file 
 ##### NOIA_API_KEY (Required)
+
 ```ini
 [Service]
 # Required parameters
@@ -16,7 +17,7 @@ Environment = NOIA_API_KEY=YOUR_API_KEY
 Environment = NOIA_CONTROLLER_URL = app-controller-platform-agents.noia.network
 Environment = NOIA_ALLOWED_IPS = [{"10.0.44.0/24":"oracle_vpc"},{"192.168.111.2/32":"internal"}]
 
-# If using docker , NOIA_NETWORK_API=docker would allow agent to access docker networks for information.
+# If using docker , NOIA_NETWORK_API = docker would allow agent to access docker networks for information.
 
 Environment = NOIA_NETWORK_API = none
 
@@ -45,20 +46,20 @@ Environment = NOIA_LON = -74.21
 
 ```ini
 
-	[Unit]
+[Unit]
 	
-	Description = NOIA Platform Agent
-	After = multi-user.target
+Description = NOIA Platform Agent
+After = multi-user.target
 
-	[Service]
+[Service]
 	
-	Type = simple
-	Restart = always
-	RestartSec = 1
-	ExecStart = /usr/local/bin/noia_agent run
+Type = simple
+Restart = always
+RestartSec = 1
+ExecStart = /usr/local/bin/noia_agent run
 
-	[Install]
+[Install]
 	
-	WantedBy = multi-user.target
+WantedBy = multi-user.target
 
 ```
