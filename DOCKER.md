@@ -8,28 +8,28 @@
 `-e NETWORK_IDS='Lpy3zq2ehdVZehZvoRFur4tV,U7FrPST7bV6NQGyBdhHyiebg'`
 #### Metadata (Optional)
 ```ini
--e NOIA_NETWORK_API='docker'
--e NOIA_NAME='Azure EU gateway '
--e NOIA_COUNTRY='Germany'
--e NOIA_CITY='Frankfurt'
+-e NOIA_NETWORK_API = 'docker'
+-e NOIA_NAME = 'Azure EU gateway '
+-e NOIA_COUNTRY = 'Germany'
+-e NOIA_CITY = 'Frankfurt'
 
 #Select one of the categories from the list or default will be assigned 
 # 'IoT','Server','none' 
--e NOIA_CATEGORY='IoT'
+-e NOIA_CATEGORY = 'IoT'
 
 #Select one of providers from the list or default will be assigned 
 #'AWS', 'DigitalOcean', 'Microsoft Azure', 'Rackspace', 'Alibaba Cloud', 
 #'Google Cloud Platform', 'Oracle Cloud', 'VMware', 'IBM Cloud', 'Vultr'. 
 
--e NOIA_PROVIDER ='Microsoft Azure'
--e NOIA_LAT='40.14'
--e NOIA_LON='-74.21'
+-e NOIA_PROVIDER = 'Microsoft Azure'
+-e NOIA_LAT = '40.14'
+-e NOIA_LON = '-74.21'
 
 #You can manually add allowed ips
--e NOIA_ALLOWED_IPS='[{"127.0.24.0/24":"myvpc"},{"192.168.24.0/32":"vpc"}]'
+-e NOIA_ALLOWED_IPS = '[{"127.0.24.0/24":"myvpc"},{"192.168.24.0/32":"vpc"}]'
 ```
 ##### Tags (Optional)
 categorize your end-points. #You can use more than one tag.  e.g. eu-group,fr-group
 ```ini
--e NOIA_TAGS='Tag1,Tag2'
+-e NOIA_TAGS = 'Tag1, Tag2'
 ```
