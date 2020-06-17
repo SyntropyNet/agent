@@ -44,21 +44,20 @@ Environment = NOIA_LON = -74.21
 
 
 ```ini
-
-	[Unit]
+[Unit]
 	
-	Description = NOIA Platform Agent
-	After = multi-user.target
+Description = NOIA Platform Agent
+After = multi-user.target
 
-	[Service]
+[Service]
 	
-	Type = simple
-	Restart = always
-	RestartSec = 1
-	ExecStart = /usr/local/bin/noia_agent run
+Type = simple
+Restart = always
+RestartSec = 1
+ExecStart = /usr/local/bin/noia_agent run
 
-	[Install]
+[Install]
 	
-	WantedBy = multi-user.target
+WantedBy = multi-user.target
 
 ```
