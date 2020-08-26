@@ -3,6 +3,7 @@ import os
 import ipaddress
 
 from icmplib import multiping
+from pyroute2 import NetlinkError
 
 from platform_agent.cmd.lsmod import module_loaded, is_tool
 from platform_agent.cmd.wg_info import WireGuardRead
@@ -35,7 +36,10 @@ def get_peer_info(ifname, wg, kind=None):
 def get_peer_info_all(ifname, wg, kind=None):
     results = []
     if kind == 'wireguard' or os.environ.get("NOIA_WIREGUARD"):
-        ss = wg.info(ifname)
+        try:
+            ss = wg.info(ifname)
+        except NetlinkError as e:
+            return results
         wg_info = dict(ss[0]['attrs'])
         peers = wg_info.get('WGDEVICE_A_PEERS', [])
         for peer in peers:
