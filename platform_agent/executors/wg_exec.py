@@ -5,6 +5,7 @@ import time
 import queue
 import traceback
 
+from platform_agent.files.tmp_files import update_tmp_config_dump
 from platform_agent.lib.ctime import now
 from platform_agent.wireguard import WgConfException, WgConf
 
@@ -45,6 +46,7 @@ class WgExecutor(threading.Thread):
                             "request_id": request_id
                         }
                     )
+                    update_tmp_config_dump(payload)
                 except AttributeError as e:
                     logger.warning(e)
                     payloads[request_id].append(

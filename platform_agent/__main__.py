@@ -4,15 +4,28 @@ Noia platform agent.
 """
 
 __author__ = "NOIA Network"
-__version__ = "0.0.52"
+__version__ = "0.0.54"
 __license__ = "MIT"
 
 import os
 import argparse
+import atexit
 
 from platform_agent.config.logger import configure_logger
-from platform_agent.config.settings import Config
+from platform_agent.config.settings import Config, AGENT_PATH_TMP
 from platform_agent.agent_websocket import WebSocketClient
+
+
+def exit_handler():
+    from pathlib import Path
+    import shutil
+
+    dirpath = Path(AGENT_PATH_TMP)
+    if dirpath.exists() and dirpath.is_dir():
+        shutil.rmtree(dirpath)
+
+
+atexit.register(exit_handler)
 
 
 def main(args=None):
@@ -43,7 +56,6 @@ def main(args=None):
 def agent(args):
     """ Main entry point of the app """
     if args.run:
-
         # Retrieving settings from config on start
         Config()
 

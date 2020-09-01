@@ -5,6 +5,9 @@ import threading
 
 from prometheus_client import start_http_server, Metric, REGISTRY
 
+from platform_agent.cmd.lsmod import module_loaded
+from platform_agent.cmd.wg_info import WireGuardRead
+from platform_agent.files.tmp_files import get_peer_metadata
 from platform_agent.wireguard.helpers import merged_peer_info
 from pyroute2 import WireGuard
 
@@ -12,15 +15,17 @@ from pyroute2 import WireGuard
 class JsonCollector(object):
     def __init__(self, interval=10):
         self.interval = interval
-        self.wg = WireGuard()
+        self.wg = WireGuard() if module_loaded("wireguard") else WireGuardRead()
 
     def collect(self):
         # Fetch the JSON
         peer_info = merged_peer_info(self.wg)
+        peer_metadata = get_peer_metadata()
         for iface in peer_info:
             metric = Metric(f"interface_info_{iface['iface']}",
                             'interface_information', 'summary')
             for peer in iface['peers']:
+                peer.update(peer_metadata.get(peer['public_key'], {}))
                 for k, v in peer.items():
                     if k not in ['latency_ms', 'packet_loss', 'rx_bytes', 'tx_bytes']:
                         continue
@@ -28,11 +33,17 @@ class JsonCollector(object):
                                       value=str(v),
                                       labels={
                                           'hostname': os.environ.get('NOIA_AGENT_NAME', socket.gethostname()),
-                                           'ifname': iface['iface'], 'peer': peer['public_key'], 'internal_ip': peer['internal_ip']})
+                                          'ifname': iface['iface'],
+                                          'peer': peer['public_key'],
+                                          'internal_ip': peer['internal_ip'],
+                                          "device_id": peer.get('device_id'),
+                                          "device_name": peer.get('device_name'),
+                                          "device_public_ipv4": peer.get('device_public_ipv4')
+                                      })
             yield metric
 
 
-class NetworkExporter(threading.Thread):
+class  NetworkExporter(threading.Thread):
 
     def __init__(self, port=18001):
         super().__init__()

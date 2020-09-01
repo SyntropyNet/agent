@@ -7,6 +7,8 @@ import yaml
 
 CONFIG_FILE = "/etc/noia-agent/config.yaml"
 
+AGENT_PATH = "/etc/noia-agent"
+AGENT_PATH_TMP = f"{AGENT_PATH}/tmp"
 
 class ConfigException(Exception):
     pass
@@ -18,12 +20,14 @@ class Config:
 
     def __init__(self):
 
-        agent_path = "/etc/noia-agent"
-        agent_dir = Path(f"{agent_path}")
+        agent_dir = Path(AGENT_PATH)
         if not agent_dir.is_dir():
             agent_dir.mkdir()
             agent_dir.chmod(0o700)
-
+        tmp_dir = Path(AGENT_PATH_TMP)
+        if not tmp_dir.is_dir():
+            tmp_dir.mkdir()
+            tmp_dir.chmod(0o700)
         if os.environ.get("NOIA_API_KEY"):
             return
 

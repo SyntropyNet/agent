@@ -108,3 +108,83 @@ def wg_show_dict():
                         'transfer': '0 B received, 2.79 MiB sent'}],
              'private_key': '(hidden)',
              'public_key': '/c2PsNqVkbKJnvcdNeh4itIBpsZYNMLksUtXGIRgSDc='}]
+
+
+@fixture
+def agent_dump():
+    return \
+        {
+            "agent_id": 30,
+            "vpn": [
+                {
+                    "fn": "create_interface",
+                    "args": {
+                        "ifname": "pmesh_51_eg0r",
+                        "internal_ip": "10.69.0.10/32",
+                        "listen_port": 57950
+                    }
+                },
+                {
+                    "fn": "add_peer",
+                    "args": {
+                        "allowed_ips": [
+                            "10.69.0.11/32",
+                            "192.168.151.0/24"
+                        ],
+                        "endpoint_ipv4": "23.99.200.18",
+                        "endpoint_port": 50848,
+                        "ifname": "pmesh_51_eg0r",
+                        "public_key": "EhFJfT0UelKZRoYITH3NHyZmCPmvO85n7Fmw2wuwTBI=",
+                        "gw_ipv4": "10.69.0.10"
+                    },
+                    "metadata": {
+                        "device_id": "1123",
+                        "device_name": "device_name",
+                        "device_public_ipv4": "72.5.6.4"
+                    }
+                },
+                {
+                    "fn": "create_interface",
+                    "args": {
+                        "ifname": "smesh_51_eyus",
+                        "internal_ip": "10.69.0.12/32",
+                        "listen_port": 48849
+                    }
+                },
+                {
+                    "fn": "add_peer",
+                    "args": {
+                        "allowed_ips": [
+                            "10.69.0.13/32",
+                            "192.168.151.0/24"
+                        ],
+                        "endpoint_ipv4": "159.8.21.106",
+                        "endpoint_port": 15566,
+                        "ifname": "smesh_51_eyus",
+                        "public_key": "EX19IgQzdPkM1tsfvSv+XOhhQ8JD/Q13e+i/H26K53U=",
+                        "gw_ipv4": "10.69.0.12"
+                    },
+                    "metadata": {
+                        "device_id": "9993",
+                        "device_name": "9993-agent",
+                        "device_public_ipv4": "73.5.6.4"
+                    }
+                }
+            ]
+        }
+
+
+@fixture
+def peer_file_read():
+    return {
+        "EhFJfT0UelKZRoYITH3NHyZmCPmvO85n7Fmw2wuwTBI=": {
+            "device_id": "1123",
+            "device_name": "device_name",
+            "device_public_ipv4": "72.5.6.4"
+        },
+        "EX19IgQzdPkM1tsfvSv+XOhhQ8JD/Q13e+i/H26K53U=": {
+            "device_id": "9993",
+            "device_name": "9993-agent",
+            "device_public_ipv4": "73.5.6.4"
+        }
+    }

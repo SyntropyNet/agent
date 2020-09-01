@@ -33,12 +33,16 @@ def test_call_error(patch_gather_initial_info, gather_initial_info_payload, GET_
     assert patch_gather_initial_info.call_args[0] == ()
 
 
+@mock.patch('platform_agent.agent_api.json.dumps')
+@mock.patch('platform_agent.agent_api.update_tmp_file')
+@mock.patch('platform_agent.agent_api.WgConf.clear_peers')
 @mock.patch('platform_agent.agent_api.WgConf.clear_interfaces')
 @mock.patch('platform_agent.agent_api.WgConf.create_interface')
-def test_config_info(patch_create_interface, patch_clear_interfaces, config_info_int_check, CONFIG_INFO, request_id):
+def test_config_info(patch_create_interface, patch_clear_interfaces, patch_clear_peers, patch_update_tmp_file, patch_json_dumps, config_info_int_check, CONFIG_INFO, request_id):
     agent_api = AgentApi(mock.MagicMock(), prod_mode=False)
     agent_api.call(CONFIG_INFO, config_info_int_check, request_id)
     assert patch_clear_interfaces.called
+    assert patch_clear_peers.called
     assert patch_create_interface.call_count == len(config_info_int_check['vpn'])
     assert patch_clear_interfaces.call_args[0][0] == config_info_int_check['vpn']
 

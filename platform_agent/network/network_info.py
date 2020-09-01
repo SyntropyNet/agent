@@ -73,7 +73,10 @@ class BWDataCollect(threading.Thread):
 
     def run(self):
         while not self.stop_BWDataCollect.is_set():
-            for iface in WgConf.get_wg_interfaces():
+            wg_ifaces = WgConf.get_wg_interfaces()
+            if not wg_ifaces:
+                time.sleep(1)
+            for iface in wg_ifaces:
                 try:
                     result = [self.get_iface_info_set(iface, self.interval)]
                 except FileNotFoundError:

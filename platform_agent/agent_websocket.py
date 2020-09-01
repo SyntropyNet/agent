@@ -13,6 +13,7 @@ from platform_agent.lib.ctime import now
 from platform_agent.agent_api import AgentApi
 from platform_agent.config.logger import PublishLogToSessionHandler
 from platform_agent.wireguard.helpers import check_if_wireguard_installled
+from platform_agent.__main__ import __version__
 
 logger = logging.getLogger()
 
@@ -105,6 +106,7 @@ class WebSocketClient(threading.Thread):
                 'x-deviceid': self.generate_device_id(),
                 'x-devicename': os.environ.get('NOIA_AGENT_NAME', socket.gethostname()),
                 'x-devicestatus': status,
+                'x-agentversion': __version__,
             },
             on_message=self.on_message,
             on_error=self.on_error,
@@ -118,9 +120,9 @@ class WebSocketClient(threading.Thread):
 
     def run(self):
         while True and self.active:
-            logger.info(f"[AGENT] Connecting {self.connection_url}")
+            logger.info(f"[AGENT-{__version__}] Connecting {self.connection_url}")
             self.ws.run_forever()
-            logger.warning(f"[AGENT] Disconnected {self.connection_url}")
+            logger.warning(f"[AGENT-{__version__}] Disconnected {self.connection_url}")
             time.sleep(10)
 
     def on_message(self, message):

@@ -17,8 +17,6 @@ class JsonCollector(object):
     def collect(self):
         # Fetch the JSON
         for iface in WgConf.get_wg_interfaces():
-        # iface = 'gw_170_zhht'
-            print(iface)
             result = BWDataCollect.get_iface_info_set(iface, self.interval)
             del result['iface']
             metric = Metric(f'interface_info_{iface}',

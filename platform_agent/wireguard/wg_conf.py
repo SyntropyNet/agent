@@ -108,6 +108,7 @@ class WgConf():
                 wg_int.commit()
             except KeyError as e:
                 raise WgConfException(str(e))
+            ip.close()
         self.wg.set(
             ifname,
             private_key=private_key,
@@ -210,6 +211,7 @@ class WireguardGo:
 
         complete_output = result_set.stdout or result_set.stderr
         complete_output = complete_output or 'Success'
+        logger.info(f"[Wireguard-go] - WG Create - {complete_output} , args {ifname}")
         return complete_output
 
     def info(self, ifname):

@@ -28,6 +28,7 @@ class WireguardPeerWatcher(threading.Thread):
         while not self.stop_peer_watcher.is_set():
             peer_info = merged_peer_info(self.wg)
             if not peer_info:
+                time.sleep(1)
                 continue
             self.client.send_log(json.dumps({
                 'id': "UNKNOWN",

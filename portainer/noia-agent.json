@@ -1,0 +1,64 @@
+[
+   {
+      "type": 1,
+      "title":"NOIA agent",
+      "description":"Connecting machines",
+      "logo": "https://imgur.com/download/eKUVKgE",
+      "categories":[
+         "Networking",
+         "VPN"
+      ],
+      "platform":"linux",
+      "image":"noia/agent:latest",
+      "name":"noia-agent",
+      "privileged": true,
+      "network":"host",
+      "env":[
+         {
+            "name":"NOIA_API_KEY",
+            "label":"NOIA API KEY (mandatory)"
+         },
+         {
+            "name":"NOIA_CONTROLLER_URL",
+            "label":"NOIA Controller URL (mandatory)",
+            "default": "app-controller-platform-agents.noia.network"
+         },
+         {
+            "name":"NOIA_NETWORK_API",
+            "label": "API to use",
+            "default":"docker"
+         },
+         {
+            "name":"NOIA_TAGS",
+            "label":"Tags (optional)"
+         },
+         {
+            "name":"NOIA_AGENT_NAME",
+            "label":"Agent name (optional)"
+         }, 
+         {
+            "name":"NOIA_COUNTRY",
+            "label":"Country (optional)"
+         }, 
+         {
+            "name":"NOIA_CITY",
+            "label":"City (optional)"
+         }, 
+         {
+            "name":"NOIA_LAT",
+            "label":"Latitude (optional)"
+         },
+         {
+            "name":"NOIA_LON",
+            "label":"Longitude (optional)"
+         }
+      ],
+      "volumes":[
+         {
+            "container":"/var/run/docker.sock",
+            "bind":"/var/run/docker.sock",
+            "readonly":true
+         }
+      ]
+   }
+]

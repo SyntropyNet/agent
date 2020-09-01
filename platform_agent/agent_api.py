@@ -1,8 +1,12 @@
+import json
 import logging
 import threading
 import os
+import time
 
+from platform_agent.lib.ctime import now
 from platform_agent.cmd.lsmod import module_loaded
+from platform_agent.files.tmp_files import update_tmp_file
 from platform_agent.lib.get_info import gather_initial_info
 from platform_agent.network.exporter import NetworkExporter
 from platform_agent.wireguard import WgConfException, WgConf, WireguardPeerWatcher
@@ -12,6 +16,7 @@ from platform_agent.executors.wg_exec import WgExecutor
 from platform_agent.network.network_info import BWDataCollect
 from platform_agent.network.autoping import AutopingClient
 from platform_agent.network.iperf import IperfServer
+from platform_agent.network.iface_watcher import InterfaceWatcher
 from platform_agent.rerouting.rerouting import Rerouting
 
 logger = logging.getLogger()
@@ -31,6 +36,7 @@ class AgentApi:
             threading.Thread(target=self.bw_data_collector.run).start()
             self.network_exporter = NetworkExporter().start()
             self.wg_peers = WireguardPeerWatcher(self.runner).start()
+            self.interface_watcher = InterfaceWatcher().start()
         if module_loaded("wireguard"):
             os.environ["NOIA_WIREGUARD"] = "true"
         if os.environ.get("NOIA_NETWORK_API", '').lower() == "docker" and prod_mode:
@@ -80,6 +86,7 @@ class AgentApi:
         return False
 
     def CONFIG_INFO(self, data, **kwargs):
+        update_tmp_file(data, 'config_dump')
         self.wgconf.clear_interfaces(data.get('vpn', []))
         self.wgconf.clear_peers(data.get('vpn', []))
         response = []
@@ -91,7 +98,12 @@ class AgentApi:
                     response.append({'fn': vpn_cmd['fn'], 'data': result})
             except WgConfException as e:
                 logger.error(f"[CONFIG_INFO] {str(e)}")
-        return response
+        self.runner.send(json.dumps({
+            'id': "ID." + str(time.time()),
+            'executed_at': now(),
+            'type': 'UPDATE_AGENT_CONFIG',
+            'data': response
+        }))
 
     def IPERF_SERVER(self, data, **kwargs):
         if self.iperf and data.get('status') == 'off':
