@@ -68,3 +68,5 @@ def configure_logger():
     )
 
     dictConfig(logging_config)
+
+    logging.getLogger("pyroute2").setLevel(logging.ERROR)

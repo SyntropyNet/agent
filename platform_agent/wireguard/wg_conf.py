@@ -118,7 +118,7 @@ class WgConf():
 
         result = {
             "public_key": public_key,
-            "listen_port": listen_port,
+            "listen_port": int(listen_port),
             "ifname": ifname
         }
         logger.info(f"[WG_CONF] - interface_created {result}")

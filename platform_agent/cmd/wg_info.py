@@ -60,7 +60,7 @@ class WireGuardRead:
         if interfaces:
             return interfaces
         else:
-            raise ValueError('There are no interfaces')
+            return []
 
     def format_value(self, key, value):
         key = self.format_key(key)

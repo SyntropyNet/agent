@@ -72,7 +72,10 @@ class AgentRunner:
         status = getattr(self.ws, 'sock')
         if status and status.status:
             logger.info(f"[SENDING]: {message}")
-            self.ws.send(message)
+            try:
+                self.ws.send(message)
+            except websocket.WebSocketConnectionClosedException or OSError as e:
+                logger.error(str(e))
         else:
             logger.error("[SENDING]: websocket offline")
 

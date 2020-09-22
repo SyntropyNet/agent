@@ -27,6 +27,7 @@ class WireguardPeerWatcher(threading.Thread):
     def run(self):
         while not self.stop_peer_watcher.is_set():
             peer_info = merged_peer_info(self.wg)
+            logger.debug(f"[PEER_WATCHER] {str(peer_info)}")
             if not peer_info:
                 time.sleep(1)
                 continue

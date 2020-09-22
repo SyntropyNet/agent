@@ -58,7 +58,7 @@ def get_interface_internal_ip(ifname):
 def get_fastest_routes(wg):
     result = {}
     routing_info, peers_internal_ips = get_routing_info(wg)
-    ping_results = ping_internal_ips(peers_internal_ips)
+    ping_results = ping_internal_ips(peers_internal_ips, icmp_id=20000)
     for dest, routes in routing_info.items():
         best_route = None
         best_ping = 9999

@@ -30,7 +30,10 @@ def get_peer_info(ifname, wg, kind=None):
                 results[peer['WGPEER_A_PUBLIC_KEY'].decode('utf-8')] = []
     else:
         wg = WireGuardRead()
-        iface = wg.wg_info(ifname)[0]
+        ifaces = wg.wg_info(ifname)
+        if not ifaces:
+            return results
+        iface = ifaces[0]
         for peer in iface['peers']:
             results[peer['peer']] = peer['allowed_ips']
     return results
@@ -63,7 +66,10 @@ def get_peer_info_all(ifname, wg, kind=None):
 
     else:
         wg = WireGuardRead()
-        iface = wg.wg_info(ifname)[0]
+        ifaces = wg.wg_info(ifname)
+        if not ifaces:
+            return results
+        iface = ifaces[0]
         for peer in iface['peers']:
             try:
                 results.append({
@@ -103,12 +109,12 @@ def check_if_wireguard_installled():
     return module_loaded('wireguard') or is_tool('wireguard-go')
 
 
-def ping_internal_ips(ips, count=4, interval=0.5):
+def ping_internal_ips(ips, count=4, interval=0.5, icmp_id=10000):
     result = {}
-    ping_res = multiping(ips, count=count, interval=interval)
+    ping_res = multiping(ips, count=count, interval=interval, id=icmp_id)
     for res in ping_res:
         result[res.address] = {
-            "latency_ms": res.avg_rtt if res.is_alive else 10000,
+            "latency_ms": res.avg_rtt if res.is_alive else 5000,
             "packet_loss": res.packet_loss if res.is_alive else 1
         }
     return result
@@ -131,7 +137,7 @@ def merged_peer_info(wg):
                 "peers": peer_info
             }
         )
-    pings = ping_internal_ips(peers_ips, count=10, interval=0.3)
+    pings = ping_internal_ips(peers_ips, count=1, interval=0.3)
     for iface in result:
         for peer in iface['peers']:
             peer.update(pings[peer['internal_ip']])
