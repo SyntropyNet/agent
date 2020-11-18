@@ -29,7 +29,6 @@ build_prod:
   stage: build
   rules:
     - if: *is-for-prod
-  when: manual
   script:
     - sudo docker build --no-cache -t noia/agent:$BRANCH_STABLE .
 

@@ -1,6 +1,7 @@
 image: python:3.6.0
 pipelines:
-  default:
+  branches:
+    '{master}':
     - step:
         script:
           - git config user.email virginijus@noia.network
