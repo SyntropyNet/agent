@@ -31,7 +31,7 @@ build_prod:
   rules:
     - if: *is-for-prod
   script:
-    - sudo docker build --no-cache -t noia/agent:$BRANCH_STABLE -t noia/agent:stable .
+    - sudo docker build --no-cache -t noia/agent:$BRANCH_STABLE -t noia/agent:stable -t noia/agent:prod .
 
 push_image_sandbox:
   stage: push_image
@@ -57,6 +57,7 @@ push_image_prod:
   script:
     - sudo docker push noia/agent:$BRANCH_STABLE
     - sudo docker push noia/agent:stable
+    - sudo docker push noia/agent:prod
 
 pypi:
   stage: pypi
