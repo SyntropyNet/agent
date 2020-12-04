@@ -21,14 +21,18 @@ class KubernetesNetworkWatcher(threading.Thread):
         super().__init__()
         try:
             config.load_incluster_config()
-            self.current_namespace = open("/var/run/secrets/kubernetes.io/serviceaccount/namespace").read()
+            current_namespaces = open("/var/run/secrets/kubernetes.io/serviceaccount/namespace").read()
         except config.config_exception.ConfigException:
-            self.current_namespace = os.environ.get('NOIA_NAMESPACE', None)
+            current_namespaces = os.environ.get('NOIA_NAMESPACE', None)
             try:
                 config.load_kube_config()
             except config.config_exception.ConfigException:
                 raise KubernetesConfigException("Couldn't find config")
-        logger.debug(f"['KUBERNETES_API'] - Namespace {self.current_namespace}")
+        if current_namespaces:
+            self.namespace_list = current_namespaces.split(',')
+        else:
+            self.namespace_list = []
+        logger.debug(f"['KUBERNETES_API'] - Namespace {self.namespace_list}")
         self.v1 = client.CoreV1Api()
         self.ws_client = ws_client
         self.stop_kubernetes_watcher = threading.Event()
@@ -43,25 +47,26 @@ class KubernetesNetworkWatcher(threading.Thread):
         ex_result = []
         while not self.stop_kubernetes_watcher.is_set():
             result = []
-            if not self.current_namespace:
+            if not self.namespace_list:
                 return
-            ret = self.v1.list_namespaced_service(self.current_namespace)
-            for i in ret.items:
-                if not i.metadata.name:
-                    continue
-                ports = {'udp': [], 'tcp': []}
-                if not i.spec.ports:
-                    continue
-                ports['tcp'] = [port.port for port in i.spec.ports if port.protocol == 'TCP']
-                ports['udp'] = [port.port for port in i.spec.ports if port.protocol == 'UDP']
-                result.append(
-                    {
-                        'agent_service_subnets': f"{i.spec.cluster_ip}/32",
-                        'agent_service_name': i.metadata.name,
-                        'agent_service_ports': ports,
-                        'agent_service_uptime': i.metadata.creation_timestamp.isoformat(),
-                    }
-                )
+            for namespace in self.namespace_list:
+                ret = self.v1.list_namespaced_service(namespace)
+                for i in ret.items:
+                    if not i.metadata.name:
+                        continue
+                    ports = {'udp': [], 'tcp': []}
+                    if not i.spec.ports:
+                        continue
+                    ports['tcp'] = [port.port for port in i.spec.ports if port.protocol == 'TCP']
+                    ports['udp'] = [port.port for port in i.spec.ports if port.protocol == 'UDP']
+                    result.append(
+                        {
+                            'agent_service_subnets': f"{i.spec.cluster_ip}/32",
+                            'agent_service_name': f"{i.metadata.name}-{namespace}",
+                            'agent_service_ports': ports,
+                            'agent_service_uptime': i.metadata.creation_timestamp.isoformat(),
+                        }
+                    )
 
             status = getattr(self.ws_client.ws, 'sock')
 
