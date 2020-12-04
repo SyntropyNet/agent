@@ -18,12 +18,14 @@ class KubernetesConfigException(Exception):
 class KubernetesNetworkWatcher(threading.Thread):
 
     def __init__(self, ws_client):
+        current_namespaces = os.environ.get('NOIA_NAMESPACE', None)
         super().__init__()
         try:
             config.load_incluster_config()
-            current_namespaces = open("/var/run/secrets/kubernetes.io/serviceaccount/namespace").read()
+            if not current_namespaces:
+                current_namespaces = open("/var/run/secrets/kubernetes.io/serviceaccount/namespace").read()
+
         except config.config_exception.ConfigException:
-            current_namespaces = os.environ.get('NOIA_NAMESPACE', None)
             try:
                 config.load_kube_config()
             except config.config_exception.ConfigException:
