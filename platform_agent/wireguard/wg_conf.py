@@ -219,7 +219,7 @@ class WgConf():
 
     def remove_peer(self, ifname, public_key, allowed_ips=None):
 
-        if ifname in self.get_wg_interfaces():
+        if ifname not in self.get_wg_interfaces():
             logger.debug(f'[WG_CONF] Remove peer - [{ifname}] does not exist')
             return
 
