@@ -41,7 +41,7 @@ class AgentApi:
             os.environ["NOIA_WIREGUARD"] = "true"
         if os.environ.get("NOIA_NETWORK_API", '').lower() == "docker" and prod_mode:
             self.network_watcher = DockerNetworkWatcher(self.runner).start()
-        if os.environ.get("NOIA_NETWORK_API", '').lower() == "dummy" and prod_mode:
+        if os.environ.get("NOIA_NETWORK_API", '').lower() == "host" and prod_mode:
             self.network_watcher = DummyNetworkWatcher(self.runner).start()
         if os.environ.get("NOIA_NETWORK_API", '').lower() == "kubernetes" and prod_mode:
             self.network_watcher = KubernetesNetworkWatcher(self.runner).start()

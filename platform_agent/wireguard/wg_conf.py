@@ -215,7 +215,7 @@ class WgConf():
         self.wg.set(ifname, peer=peer)
         statuses = self.routes.ip_route_add(ifname, allowed_ips, gw_ipv4)
         add_iptable_rules(allowed_ips)
-        self.client.send(json.dumps({
+        self.client.send_log(json.dumps({
             'id': "ID." + str(now()),
             'executed_at': now(),
             "type": "WG_ROUTE_STATUS",

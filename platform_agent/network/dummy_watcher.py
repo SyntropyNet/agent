@@ -21,7 +21,6 @@ class DummyNetworkWatcher(threading.Thread):
         self.daemon = True
 
     def run(self):
-        result = []
         ex_result = []
         with IPDB() as ipdb:
             while not self.stop_network_watcher.is_set():
@@ -29,6 +28,7 @@ class DummyNetworkWatcher(threading.Thread):
                 udp_info = [{x.laddr.ip: x.laddr.port} for x in udp]
                 tcp = psutil.net_connections(kind='tcp')
                 tcp_info = [{x.laddr.ip: x.laddr.port} for x in tcp]
+                result = []
                 for iface in self.ifaces:
                     intf = ipdb.interfaces[iface]
                     for k, v in dict(intf['ipaddr']).items():
