@@ -72,13 +72,23 @@ def get_provider():
     except (ValueError, KeyError):
         return None
 
+
+def get_tags():
+    tags = []
+    for tag in Config.get_list_item('tags'):
+        if len(tag) < 3:
+            continue
+        tags.append(tag)
+    return tags
+
+
 def get_info():
     return {
         "agent_name": os.environ.get('NOIA_AGENT_NAME', socket.gethostname()),
         "agent_provider": get_provider(),
         "agent_category": os.environ.get('NOIA_CATEGORY', None),
         "service_status": get_srevice_status(),
-        "agent_tags": Config.get_list_item('tags'),
+        "agent_tags": get_tags(),
         "network_ids": Config.get_list_item('network_ids'),
     }
 
