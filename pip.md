@@ -23,7 +23,7 @@ Environment=SYNTROPY_NETWORK_API=none
 
 Environment=SYNTROPY_AGENT_NAME=Azure EU gateway
 
-# Select one of providers from the list - https://syntropy-network.readme.io/docs/start-syntropy-agent#section-variables
+# Select one of providers from the list - https://docs.syntropystack.com/docs/start-syntropy-agent#section-variables
 
 Environment=SYNTROPY_PROVIDER=1
 
