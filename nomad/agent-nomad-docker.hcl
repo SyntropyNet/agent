@@ -43,7 +43,7 @@ job "syntropy-agent" {
       }
     env {
         SYNTROPY_API_KEY='xxxxxxxIE0VZAaX0coxxxxxxxxx'
-        SYNTROPY_CONTROLLER_URL='controller-prod-platform-agents.syntropy.network'
+        SYNTROPY_CONTROLLER_URL='controller-prod-platform-agents.syntropystack.com'
 
     }
 

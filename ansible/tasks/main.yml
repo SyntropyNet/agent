@@ -26,7 +26,7 @@
     purge_networks: no
     env:
       SYNTROPY_API_KEY: "{{ syntropy_api_key }}"
-      SYNTROPY_CONTROLLER_URL:  "{{ ctrl_url | default('controller-prod-platform-agents.syntropy.network') }}"
+      SYNTROPY_CONTROLLER_URL:  "{{ ctrl_url | default('controller-prod-platform-agents.syntropystack.com') }}"
       SYNTROPY_NETWORK_API: docker
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro

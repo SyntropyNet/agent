@@ -28,7 +28,7 @@ job "syntropy-agent" {
         }
     env {
       SYNTROPY_API_KEY='z99CuiZnMhe2qtz4LLX43Gbho5Zu9G8oAoWRY68WdMTVB9GzuMY2HNn667A752EA'
-      SYNTROPY_CONTROLLER_URL='controller-prod-platform-agents.syntropy.network'
+      SYNTROPY_CONTROLLER_URL='controller-prod-platform-agents.syntropystack.com'
 
     }
       }

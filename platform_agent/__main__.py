@@ -72,7 +72,7 @@ def agent(args):
 
         # Initiating WS client
         client = WebSocketClient(
-            os.environ.get('SYNTROPY_CONTROLLER_URL', 'controller-prod-platform-agents.syntropy.network'),
+            os.environ.get('SYNTROPY_CONTROLLER_URL', 'controller-prod-platform-agents.syntropystack.com'),
             os.environ['SYNTROPY_API_KEY']
         )
 

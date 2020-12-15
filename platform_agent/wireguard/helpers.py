@@ -162,7 +162,7 @@ def check_udp_connection():
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         client_socket.settimeout(1.0)
         message = b'test'
-        addr = ("udp-check.syntropy.network", 12000)
+        addr = ("udp-check.syntropystack.com", 12000)
         client_socket.sendto(message, addr)
         try:
             client_socket.recvfrom(1024)

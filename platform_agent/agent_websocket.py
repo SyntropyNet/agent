@@ -173,7 +173,7 @@ class WebSocketClient(threading.Thread):
         except FileNotFoundError:
             try:
                 with open('/etc/machine-id', 'r') as file:
-                    machine_id = file.read().replace('\n', '') + requests.get("https://ip.syntropy.network/").json()
+                    machine_id = file.read().replace('\n', '') + requests.get("https://ip.syntropystack.com/").json()
             except FileNotFoundError:
                 machine_id = self.getserial()
 

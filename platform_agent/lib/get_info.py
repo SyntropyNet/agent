@@ -15,7 +15,7 @@ logger = logging.getLogger()
 
 def get_ip_addr():
     try:
-        resp = requests.get("https://ip.syntropy.network/")
+        resp = requests.get("https://ip.syntropystack.com/")
         return {
             "external_ip": resp.json()
         }

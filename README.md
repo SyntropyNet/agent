@@ -2,8 +2,8 @@
 
 ---
 
-#### [Latest SYNTROPY Agent Docs](https://docs.syntropy.network/docs/start-syntropy-agent) 
-- https://docs.syntropy.network/docs/start-syntropy-agent
+#### [Latest SYNTROPY Agent Docs](https://docs.syntropystack.com/docs/start-syntropy-agent) 
+- https://docs.syntropystack.com/docs/start-syntropy-agent
 #### Prerequisites
 
 * Wireguard kernel module is installed and loaded:
@@ -23,7 +23,7 @@ docker system info
 
 #### Steps
 ----
-##### 1. Login to [https://platform.syntropy.network](https://platform.syntropy.network) 
+##### 1. Login to [https://platform.syntropystack.com](https://platform.syntropystack.com) 
 ---
 ##### 2. Create API key (Settings > API keys)
 
@@ -54,7 +54,7 @@ Check agent logs:
 
 ```docker logs syntropy-agent```
 
-More information:     [https://docs.syntropy.network/docs/start-syntropy-agent#install-with-docker](https://docs.syntropy.network/docs/start-syntropy-agent#install-with-docker)
+More information:     [https://docs.syntropystack.com/docs/start-syntropy-agent#install-with-docker](https://docs.syntropystack.com/docs/start-syntropy-agent#install-with-docker)
 
 ---
 
@@ -65,14 +65,14 @@ More information:     [https://docs.syntropy.network/docs/start-syntropy-agent#i
 > With Portainer agent:
 
 ```bash
-curl  https://gitlab.com/syntropy-public/platform_agent/-/raw/master/docker-compose/na-pa.yml \
+curl  https://raw.githubusercontent.com/SyntropyNet/syntropy-agent/master/docker-compose/na-pa.yml \
 -o docker-compose.yaml
 ```
 
 > Without portainer agent:
 
 ```bash
-curl  https://gitlab.com/syntropy-public/platform_agent/-/raw/master/docker-compose/syntropy-agent.yaml \
+curl  https://raw.githubusercontent.com/SyntropyNet/syntropy-agent/master/docker-compose/syntropy-agent.yml \
 -o docker-compose.yaml
 ```
 
@@ -97,7 +97,7 @@ P.S. SYNTROPY Agent will ignore the default docker network, you will  need to cr
 
 More information:
 
-[https://docs.syntropy.network/docs/start-syntropy-agent#install-as-docker-compose](https://docs.syntropy.network/docs/start-syntropy-agent#install-as-docker-compose)
+[https://docs.syntropystack.com/docs/start-syntropy-agent#install-as-docker-compose](https://docs.syntropystack.com/docs/start-syntropy-agent#install-as-docker-compose)
 
 ---
 
@@ -111,7 +111,7 @@ pip3 install platform-agent
 Download systemd service file:
 
 ```bash
-curl https://gitlab.com/syntropy-public/platform_agent/-/raw/master/systemd/syntropy-agent.service -o /etc/systemd/system/syntropy-agent.service
+curl https://raw.githubusercontent.com/SyntropyNet/syntropy-agent/master/systemd/syntropy-agent.service -o /etc/systemd/system/syntropy-agent.service
 ```
 
 Create syntropy-agent directory:
@@ -121,7 +121,7 @@ chmod -R 600 /etc/systemd/system/syntropy-agent.service.d/
 ```
 Download settings file:
 ```bash
-curl https://gitlab.com/syntropy-public/platform_agent/-/raw/master/systemd/10-vars.conf -o /etc/systemd/system/syntropy-agent.service.d/10-vars.conf
+curl https://raw.githubusercontent.com/SyntropyNet/syntropy-agent/master/systemd/10-vars.conf -o /etc/systemd/system/syntropy-agent.service.d/10-vars.conf
 ```
 
 Edit settings file ```/etc/systemd/system/syntropy-agent.service.d/10-vars.conf``` and change these settings:
@@ -131,7 +131,7 @@ Edit settings file ```/etc/systemd/system/syntropy-agent.service.d/10-vars.conf`
 # Required parameters
 Environment=SYNTROPY_API_KEY=YOUR_API_KEY
 # Optional parameters
-Environment=SYNTROPY_CONTROLLER_URL=controller-prod-platform-agents.syntropy.network
+Environment=SYNTROPY_CONTROLLER_URL=controller-prod-platform-agents.syntropystack.com
 Environment=SYNTROPY_ALLOWED_IPS=[{"10.0.44.0/24":"oracle_vpc"},{"192.168.111.2/32":"internal"}]
 #If using docker , SYNTROPY_NETWORK_API=docker would allow agent to access docker networks for information.
 Environment=SYNTROPY_NETWORK_API=none
@@ -159,6 +159,6 @@ Check if service is running:
 systemctl status syntropy-agent
 ```
 
-More information: [https://docs.syntropy.network/docs/start-syntropy-agent#install-with-pip](https://docs.syntropy.network/docs/start-syntropy-agent#install-with-pip)
+More information: [https://docs.syntropystack.com/docs/start-syntropy-agent#install-with-pip](https://docs.syntropystack.com/docs/start-syntropy-agent#install-with-pip)
 
 ---
