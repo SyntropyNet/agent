@@ -38,12 +38,12 @@ class AgentApi:
             self.wg_peers = WireguardPeerWatcher(self.runner).start()
             self.interface_watcher = InterfaceWatcher().start()
         if module_loaded("wireguard"):
-            os.environ["NOIA_WIREGUARD"] = "true"
-        if os.environ.get("NOIA_NETWORK_API", '').lower() == "docker" and prod_mode:
+            os.environ["SYNTROPY_WIREGUARD"] = "true"
+        if os.environ.get("SYNTROPY_NETWORK_API", '').lower() == "docker" and prod_mode:
             self.network_watcher = DockerNetworkWatcher(self.runner).start()
-        if os.environ.get("NOIA_NETWORK_API", '').lower() == "host" and prod_mode:
+        if os.environ.get("SYNTROPY_NETWORK_API", '').lower() == "host" and prod_mode:
             self.network_watcher = DummyNetworkWatcher(self.runner).start()
-        if os.environ.get("NOIA_NETWORK_API", '').lower() == "kubernetes" and prod_mode:
+        if os.environ.get("SYNTROPY_NETWORK_API", '').lower() == "kubernetes" and prod_mode:
             self.network_watcher = KubernetesNetworkWatcher(self.runner).start()
         self.rerouting = Rerouting(self.runner).start()
 

@@ -17,7 +17,7 @@ class DummyNetworkWatcher(threading.Thread):
         self.stop_network_watcher = threading.Event()
         with IPDB() as ipdb:
             self.ifaces = [k for k, v in ipdb.by_name.items() if any(
-                substring in k for substring in ['noia_'])]
+                substring in k for substring in ['syntropy_'])]
         self.daemon = True
 
     def run(self):

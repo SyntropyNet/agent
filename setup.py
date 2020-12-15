@@ -37,7 +37,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'noia_agent = platform_agent.__main__:main'
+            'syntropy_agent = platform_agent.__main__:main'
         ]
     },
 )

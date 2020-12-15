@@ -1,7 +1,7 @@
 [
    {
       "type": 1,
-      "title":"NOIA agent",
+      "title":"SYNTROPY agent",
       "description":"Connecting machines",
       "categories":[
          "Networking",
@@ -9,56 +9,56 @@
       ],
       "platform":"linux",
       "logo":"https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/sematext_agent.png",
-      "image":"noia/agent:latest",
-      "name":"noia-agent",
+      "image":"syntropy/agent:latest",
+      "name":"syntropy-agent",
       "network":"host",
       "env":[
          {
-            "name":"NOIA_API_KEY",
+            "name":"SYNTROPY_API_KEY",
             "label":"xx"
          },
          {
-            "name":"NOIA_CONTROLLER_URL",
-            "label":"controller-prod-platform-agents.noia.network"
+            "name":"SYNTROPY_CONTROLLER_URL",
+            "label":"controller-prod-platform-agents.syntropy.network"
          },
          {
-            "name":"NOIA_NETWORK_API",
+            "name":"SYNTROPY_NETWORK_API",
             "label":"docker"
          },
          {
-            "name":"NOIA_TAGS",
+            "name":"SYNTROPY_TAGS",
             "label":"x"
          },
          {
-            "name":"NOIA_AGENT_NAME",
+            "name":"SYNTROPY_AGENT_NAME",
             "label":"x"
          },
          {
-            "name":"NOIA_COUNTRY",
+            "name":"SYNTROPY_COUNTRY",
             "label":"x"
          },
          {
-            "name":"NOIA_CITY",
+            "name":"SYNTROPY_CITY",
             "label":"x"
          },
          {
-            "name":"NOIA_CATEGORY",
+            "name":"SYNTROPY_CATEGORY",
             "label":"x"
          },
          {
-            "name":"NOIA_PROVIDER",
+            "name":"SYNTROPY_PROVIDER",
             "label":"x"
          },
          {
-            "name":"NOIA_LAT",
+            "name":"SYNTROPY_LAT",
             "label":"x"
          },
          {
-            "name":"NOIA_LON",
+            "name":"SYNTROPY_LON",
             "label":"x"
          },
          {
-            "name":"NOIA_TAGS",
+            "name":"SYNTROPY_TAGS",
             "label":"x"
          }
       ],

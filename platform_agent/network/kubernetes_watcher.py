@@ -18,7 +18,7 @@ class KubernetesConfigException(Exception):
 class KubernetesNetworkWatcher(threading.Thread):
 
     def __init__(self, ws_client):
-        current_namespaces = os.environ.get('NOIA_NAMESPACE', None)
+        current_namespaces = os.environ.get('SYNTROPY_NAMESPACE', None)
         super().__init__()
         try:
             config.load_incluster_config()
@@ -42,7 +42,7 @@ class KubernetesNetworkWatcher(threading.Thread):
 
         with IPDB() as ipdb:
             self.ifaces = [k for k, v in ipdb.by_name.items() if any(
-                substring in k for substring in ['noia_'])]
+                substring in k for substring in ['syntropy_'])]
         self.daemon = True
 
     def run(self):

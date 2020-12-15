@@ -54,7 +54,7 @@ def format_container_result(containers):
 
             try:
                 container_info['name'] = \
-                    [name for name in container_conf.get('Env', []) if 'NOIA_SERVICE_NAME' in name][0].split('=')[1]
+                    [name for name in container_conf.get('Env', []) if 'SYNTROPY_SERVICE_NAME' in name][0].split('=')[1]
             except IndexError:
                 container_info['name'] = container_conf.get('Domainname', container_info.get('Name'))
 

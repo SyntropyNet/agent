@@ -108,7 +108,7 @@ class WebSocketClient(threading.Thread):
             header={
                 'authorization': api_key,
                 'x-deviceid': self.generate_device_id(),
-                'x-devicename': os.environ.get('NOIA_AGENT_NAME', socket.gethostname()),
+                'x-devicename': os.environ.get('SYNTROPY_AGENT_NAME', socket.gethostname()),
                 'x-devicestatus': status,
                 'x-agentversion': __version__,
             },
@@ -173,7 +173,7 @@ class WebSocketClient(threading.Thread):
         except FileNotFoundError:
             try:
                 with open('/etc/machine-id', 'r') as file:
-                    machine_id = file.read().replace('\n', '') + requests.get("https://ip.noia.network/").json()
+                    machine_id = file.read().replace('\n', '') + requests.get("https://ip.syntropy.network/").json()
             except FileNotFoundError:
                 machine_id = self.getserial()
 

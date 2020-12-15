@@ -5,12 +5,12 @@ services:
     image: portainer/agent
     restart: always
     networks:
-      - noia
+      - syntropy
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /var/lib/docker/volumes:/var/lib/docker/volumes
 networks:
-    noia:
+    syntropy:
         ipam:
             config:
                 - subnet: 192.168.150.0/24

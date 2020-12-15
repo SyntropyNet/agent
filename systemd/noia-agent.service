@@ -1,10 +1,10 @@
 [Unit]
-Description=NOIA Platform Agent
+Description=SYNTROPY Platform Agent
 After=multi-user.target
 [Service]
 Type=simple
 Restart=always
 RestartSec=1
-ExecStart=/usr/local/bin/noia_agent run
+ExecStart=/usr/local/bin/syntropy_agent run
 [Install]
 WantedBy=multi-user.target

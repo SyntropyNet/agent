@@ -3,17 +3,17 @@ kind: DaemonSet
 metadata:
   annotations:
   labels:
-    service: noia-agent
-  name: noia-agent
-  namespace: noia-agent
+    service: syntropy-agent
+  name: syntropy-agent
+  namespace: syntropy-agent
 spec:
   selector:
     matchLabels:
-      service: noia-agent
+      service: syntropy-agent
   template:
     metadata:
       labels:
-        service: noia-agent
+        service: syntropy-agent
     spec:
       affinity:
         nodeAffinity:
@@ -30,21 +30,21 @@ spec:
                 - amd64
       containers:
       - env:
-        - name: NOIA_CONTROLLER_URL
+        - name: SYNTROPY_CONTROLLER_URL
           valueFrom:
             secretKeyRef:
-              key: NOIA_CONTROLLER_URL
-              name: noia-platform
+              key: SYNTROPY_CONTROLLER_URL
+              name: syntropy-platform
               optional: false
-        - name: NOIA_API_KEY
+        - name: SYNTROPY_API_KEY
           valueFrom:
             secretKeyRef:
-              key: NOIA_API_KEY
-              name: noia-platform
+              key: SYNTROPY_API_KEY
+              name: syntropy-platform
               optional: false
-        image: noia/agent:stable
+        image: syntropy/agent:stable
         imagePullPolicy: Always
-        name: noia-agent
+        name: syntropy-agent
         resources: {}
         securityContext:
           capabilities:

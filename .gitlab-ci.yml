@@ -17,46 +17,46 @@ build_sandbox:
   rules:
     - if: *is-for-sandbox
   script:
-    - sudo docker build --no-cache -t noia/agent:sandbox-$CI_COMMIT_SHORT_SHA -t noia/agent:sandbox -t noia/agent:latest .
+    - sudo docker build --no-cache -t syntropy/agent:sandbox-$CI_COMMIT_SHORT_SHA -t syntropy/agent:sandbox -t syntropy/agent:latest .
 
 build_devel:
   stage: build
   rules:
     - if: *is-for-devel
   script:
-    - sudo docker build --no-cache -t noia/agent:$CI_COMMIT_TAG -t noia/agent:devel .
+    - sudo docker build --no-cache -t syntropy/agent:$CI_COMMIT_TAG -t syntropy/agent:devel .
 
 build_prod:
   stage: build
   rules:
     - if: *is-for-prod
   script:
-    - sudo docker build --no-cache -t noia/agent:$BRANCH_STABLE -t noia/agent:stable .
+    - sudo docker build --no-cache -t syntropy/agent:$BRANCH_STABLE -t syntropy/agent:stable .
 
 push_image_sandbox:
   stage: push_image
   rules:
     - if: *is-for-sandbox
   script:
-    - sudo docker push noia/agent:sandbox-$CI_COMMIT_SHORT_SHA
-    - sudo docker push noia/agent:sandbox
-    - sudo docker push noia/agent:latest
+    - sudo docker push syntropy/agent:sandbox-$CI_COMMIT_SHORT_SHA
+    - sudo docker push syntropy/agent:sandbox
+    - sudo docker push syntropy/agent:latest
 
 push_image_devel:
   stage: push_image
   rules:
     - if: *is-for-devel
   script:
-    - sudo docker push noia/agent:$CI_COMMIT_TAG
-    - sudo docker push noia/agent:devel
+    - sudo docker push syntropy/agent:$CI_COMMIT_TAG
+    - sudo docker push syntropy/agent:devel
 
 push_image_prod:
   stage: push_image
   rules:
     - if: *is-for-prod
   script:
-    - sudo docker push noia/agent:$BRANCH_STABLE
-    - sudo docker push noia/agent:stable
+    - sudo docker push syntropy/agent:$BRANCH_STABLE
+    - sudo docker push syntropy/agent:stable
 
 pypi:
   stage: pypi

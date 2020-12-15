@@ -59,7 +59,7 @@ def get_iface_public_key(ifname):
 
 def get_peer_info(ifname, wg, kind=None):
     results = {}
-    if kind == 'wireguard' or os.environ.get("NOIA_WIREGUARD"):
+    if kind == 'wireguard' or os.environ.get("SYNTROPY_WIREGUARD"):
         try:
             ss = wg.info(ifname)
         except NetlinkError as e:
@@ -87,7 +87,7 @@ def get_peer_info(ifname, wg, kind=None):
 def get_peer_info_all(ifname, wg, kind=None):
     results = []
     # TODO NEED FIX pyroute2 wireguard info solution, because of missing peers when getting info.
-    # if kind == 'wireguard' or os.environ.get("NOIA_WIREGUARD"):
+    # if kind == 'wireguard' or os.environ.get("SYNTROPY_WIREGUARD"):
     #     try:
     #         ss = wg.info(ifname)
     #     except NetlinkError as e:
@@ -162,7 +162,7 @@ def check_udp_connection():
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         client_socket.settimeout(1.0)
         message = b'test'
-        addr = ("udp-check.noia.network", 12000)
+        addr = ("udp-check.syntropy.network", 12000)
         client_socket.sendto(message, addr)
         try:
             client_socket.recvfrom(1024)

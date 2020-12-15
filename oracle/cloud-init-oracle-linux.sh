@@ -11,13 +11,13 @@ sudo grub2-set-default 0
 sudo setenforce 0
 sudo touch /etc/modules-load.d/wireguard.conf
 sudo echo wireguard >> /etc/modules-load.d/wireguard.conf
-sudo curl https://bitbucket.org/noianetwork-team/platform-agent/raw/master/systemd/noia-agent.service \
--o /etc/systemd/system/noia-agent.service
-sudo mkdir /etc/systemd/system/noia-agent.service.d/
-sudo echo [Service] >> /etc/systemd/system/noia-agent.service.d/10-vars.conf
-sudo echo Environment=NOIA_API_KEY=CHANGE_ME >> /etc/systemd/system/noia-agent.service.d/10-vars.conf
+sudo curl https://bitbucket.org/syntropynetwork-team/platform-agent/raw/master/systemd/syntropy-agent.service \
+-o /etc/systemd/system/syntropy-agent.service
+sudo mkdir /etc/systemd/system/syntropy-agent.service.d/
+sudo echo [Service] >> /etc/systemd/system/syntropy-agent.service.d/10-vars.conf
+sudo echo Environment=SYNTROPY_API_KEY=CHANGE_ME >> /etc/systemd/system/syntropy-agent.service.d/10-vars.conf
 sudo systemctl daemon-reload
-sudo systemctl enable noia-agent
+sudo systemctl enable syntropy-agent
 sudo firewall-cmd --permanent --zone=public --add-port=1024-65535/udp
 sudo reboot
 

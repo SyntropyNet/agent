@@ -1,4 +1,4 @@
-job "noia-agent" {
+job "syntropy-agent" {
 
   type = "system"
   datacenters = ["dc1"]  
@@ -16,14 +16,14 @@ job "noia-agent" {
       mode = "fail"
     }
 
-    task "noia-agent" {
+    task "syntropy-agent" {
       driver = "docker"
       resources {
         memory = 900
         cpu    = 2000
       }
     config {
-      image = "noia/agent:latest"
+      image = "syntropy/agent:latest"
       force_pull = true
       network_mode = "host"
       volumes = [
@@ -42,8 +42,8 @@ job "noia-agent" {
 
       }
     env {
-        NOIA_API_KEY='xxxxxxxIE0VZAaX0coxxxxxxxxx'
-        NOIA_CONTROLLER_URL='controller-prod-platform-agents.noia.network'
+        SYNTROPY_API_KEY='xxxxxxxIE0VZAaX0coxxxxxxxxx'
+        SYNTROPY_CONTROLLER_URL='controller-prod-platform-agents.syntropy.network'
 
     }
 

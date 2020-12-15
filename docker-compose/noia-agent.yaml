@@ -1,15 +1,15 @@
 version: '2'
 
 services:
-  noia-agent:
-    image: noia/agent:stable
-    container_name: noia-agent
+  syntropy-agent:
+    image: syntropy/agent:stable
+    container_name: syntropy-agent
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
     environment:
-      - NOIA_API_KEY=my-random-api-key
-      - NOIA_NETWORK_API=docker
+      - SYNTROPY_API_KEY=my-random-api-key
+      - SYNTROPY_NETWORK_API=docker
     restart: always
     network_mode: "host"
     volumes:

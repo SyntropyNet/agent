@@ -1,33 +1,33 @@
 ---
-# tasks file for noia-agent
+# tasks file for syntropy-agent
 - name: pull an image
   docker_image:
-    name: noia/agent:latest
+    name: syntropy/agent:latest
     force_source: yes
   tags:
-    - pull_noia-agent
+    - pull_syntropy-agent
 
 - name: Stop and remove old container
   docker_container:
-    name: noia-agent
+    name: syntropy-agent
     state: absent
-    image: noia-agent
+    image: syntropy-agent
   tags:
-    - remove_noia-agent
+    - remove_syntropy-agent
 
-- name: Create NOIA agent container and connect to network
+- name: Create SYNTROPY agent container and connect to network
   docker_container:
-    name: noia-agent
+    name: syntropy-agent
     restart_policy: unless-stopped
-    image: noia/agent:latest
+    image: syntropy/agent:latest
     exposed_ports:
       - 18001
     network_mode: "host"
     purge_networks: no
     env:
-      NOIA_API_KEY: "{{ noia_api_key }}"
-      NOIA_CONTROLLER_URL:  "{{ ctrl_url | default('controller-prod-platform-agents.noia.network') }}"
-      NOIA_NETWORK_API: docker
+      SYNTROPY_API_KEY: "{{ syntropy_api_key }}"
+      SYNTROPY_CONTROLLER_URL:  "{{ ctrl_url | default('controller-prod-platform-agents.syntropy.network') }}"
+      SYNTROPY_NETWORK_API: docker
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     devices:
@@ -36,5 +36,5 @@
       - net_admin
       - sys_module
   tags:
-    - start_noia-agent
+    - start_syntropy-agent
 

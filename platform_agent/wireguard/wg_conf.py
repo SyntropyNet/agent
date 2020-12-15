@@ -117,8 +117,8 @@ class WgConf():
                     self.remove_peer(iface, peer)
 
     def get_wg_keys(self, ifname):
-        private_key_path = f"/etc/noia-agent/privatekey-{ifname}"
-        public_key_path = f"/etc/noia-agent/publickey-{ifname}"
+        private_key_path = f"/etc/syntropy-agent/privatekey-{ifname}"
+        public_key_path = f"/etc/syntropy-agent/publickey-{ifname}"
         private_key = Path(private_key_path)
         public_key = Path(public_key_path)
         if not private_key.is_file() or not public_key.is_file():

@@ -15,7 +15,7 @@ logger = logging.getLogger()
 
 def get_ip_addr():
     try:
-        resp = requests.get("https://ip.noia.network/")
+        resp = requests.get("https://ip.syntropy.network/")
         return {
             "external_ip": resp.json()
         }
@@ -25,14 +25,14 @@ def get_ip_addr():
 
 def get_location():
     return {
-        "location_lat": os.environ.get('NOIA_LAT'),
-        "location_lon": os.environ.get('NOIA_LON'),
+        "location_lat": os.environ.get('SYNTROPY_LAT'),
+        "location_lon": os.environ.get('SYNTROPY_LON'),
     }
 
 
 def get_network_info():
     network_info = []
-    if os.environ.get("NOIA_NETWORK_API", '').lower() == "docker":
+    if os.environ.get("SYNTROPY_NETWORK_API", '').lower() == "docker":
         try:
             docker_client = docker.from_env()
             networks = docker_client.networks()
@@ -47,7 +47,7 @@ def get_network_info():
 
 def get_container_results():
     container_info = []
-    if os.environ.get("NOIA_NETWORK_API", '').lower() == "docker":
+    if os.environ.get("SYNTROPY_NETWORK_API", '').lower() == "docker":
         try:
             docker_client = docker.from_env()
             networks = docker_client.containers()
@@ -60,7 +60,7 @@ def get_container_results():
 
 
 def get_srevice_status():
-    if os.environ.get('NOIA_SERVICES_STATUS') and os.environ.get('NOIA_SERVICES_STATUS').lower() == 'true':
+    if os.environ.get('SYNTROPY_SERVICES_STATUS') and os.environ.get('SYNTROPY_SERVICES_STATUS').lower() == 'true':
         return True
     else:
         return False
@@ -68,7 +68,7 @@ def get_srevice_status():
 
 def get_provider():
     try:
-        int(os.environ['NOIA_PROVIDER']),
+        int(os.environ['SYNTROPY_PROVIDER']),
     except (ValueError, KeyError):
         return None
 
@@ -84,9 +84,9 @@ def get_tags():
 
 def get_info():
     return {
-        "agent_name": os.environ.get('NOIA_AGENT_NAME', socket.gethostname()),
+        "agent_name": os.environ.get('SYNTROPY_AGENT_NAME', socket.gethostname()),
         "agent_provider": get_provider(),
-        "agent_category": os.environ.get('NOIA_CATEGORY', None),
+        "agent_category": os.environ.get('SYNTROPY_CATEGORY', None),
         "service_status": get_srevice_status(),
         "agent_tags": get_tags(),
         "network_ids": Config.get_list_item('network_ids'),

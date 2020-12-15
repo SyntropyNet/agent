@@ -45,21 +45,21 @@ class PublishLogToSessionHandler(logging.Handler):
 
 def configure_logger():
 
-    log_path = "/var/log/noia-platform"
+    log_path = "/var/log/syntropy-platform"
 
     log_file = Path(f"{log_path}/agent.log")
 
-    noia_platform_dir = Path(f"{log_path}")
+    syntropy_platform_dir = Path(f"{log_path}")
 
-    if not noia_platform_dir.is_dir():
-        noia_platform_dir.mkdir()
+    if not syntropy_platform_dir.is_dir():
+        syntropy_platform_dir.mkdir()
     if not log_file.is_file():
         log_file.write_text('')
 
-    if os.environ.get('NOIA_LOG_LEVEL', '20').isdigit():
-        loglevel = int(os.environ.get('NOIA_LOG_LEVEL', '20'))
+    if os.environ.get('SYNTROPY_LOG_LEVEL', '20').isdigit():
+        loglevel = int(os.environ.get('SYNTROPY_LOG_LEVEL', '20'))
     else:
-        loglevel = os.environ.get('NOIA_LOG_LEVEL', 'INFO')
+        loglevel = os.environ.get('SYNTROPY_LOG_LEVEL', 'INFO')
 
     logging_config = dict(
         version=1,
@@ -78,7 +78,7 @@ def configure_logger():
                 'level': 'DEBUG',
                 'class': 'logging.handlers.RotatingFileHandler',
                 'formatter': 'f',
-                'filename': os.environ.get('NOIA_LOG_FILE', "/var/log/noia-platform/agent.log")
+                'filename': os.environ.get('SYNTROPY_LOG_FILE', "/var/log/syntropy-platform/agent.log")
             }
         },
         root={

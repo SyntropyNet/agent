@@ -25,7 +25,7 @@ class JsonCollector(object):
             for k, v in result.items():
                 print(k, v)
                 metric.add_sample(f'interface_information_{k}',
-                                  value=str(v), labels={'hostname': os.environ.get('NOIA_AGENT_NAME', socket.gethostname()), 'interval': str(self.interval)})
+                                  value=str(v), labels={'hostname': os.environ.get('SYNTROPY_AGENT_NAME', socket.gethostname()), 'interval': str(self.interval)})
             yield metric
 
 

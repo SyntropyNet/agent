@@ -32,7 +32,7 @@ class JsonCollector(object):
                     metric.add_sample(f"iface_information_{k}",
                                       value=str(v),
                                       labels={
-                                          'hostname': os.environ.get('NOIA_AGENT_NAME', socket.gethostname()),
+                                          'hostname': os.environ.get('SYNTROPY_AGENT_NAME', socket.gethostname()),
                                           'ifname': iface['iface'],
                                           'peer': peer['public_key'],
                                           'internal_ip': peer['internal_ip'],

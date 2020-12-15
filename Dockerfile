@@ -26,4 +26,4 @@ RUN apk add wireguard-tools iproute2 \
   && rm -rf /agent \
   && apk del build-dependencies
 
-ENTRYPOINT ["/usr/local/bin/noia_agent", "run"]
+ENTRYPOINT ["/usr/local/bin/syntropy_agent", "run"]
