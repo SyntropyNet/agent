@@ -179,11 +179,11 @@ class WgConf():
                 )
         listen_port = self.get_listening_port(ifname)
         if not listen_port:
-            listen_port = find_free_port()
+            listen_port = find_free_port(bool('SDN' in ifname))
             self.wg.set(
                 ifname,
                 private_key=private_key,
-                listen_port=listen_port
+                listen_port=listen_port if listen_port else None
             )
         add_iptables_forward(ifname)
         result = {

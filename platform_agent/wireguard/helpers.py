@@ -6,6 +6,7 @@ import psutil
 import socket
 from random import randint
 
+import requests
 from icmplib import multiping
 from pyroute2 import NetlinkError
 
@@ -34,8 +35,19 @@ def get_connection_status(latency_ms, packet_loss):
     )
     return res
 
+def get_ip_address():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    return s.getsockname()[0]
 
-def find_free_port():
+def get_public_ip():
+    try:
+        return requests.get("https://ip.syntropystack.com/").json()
+    except:
+        return requests.get('https://ident.me').text
+
+
+def find_free_port(SDN=False):
     ports_start = 49152
     ports_end = 65535
     if os.environ.get("SYNTROPY_PORT_RANGE"):
@@ -46,6 +58,10 @@ def find_free_port():
             ports_end = int(ports[1])
         except (IndexError, ValueError):
             pass
+
+    elif SDN and get_ip_address() != get_public_ip():
+        return 0
+
     port = randint(ports_start, ports_end)
     portsinuse = []
     while True:
