@@ -46,10 +46,11 @@ def get_public_ip():
     except:
         return requests.get('https://ident.me').text
 
+def behind_nat():
+    return bool(get_ip_address() != get_public_ip())
 
 def find_free_port(SDN=False):
-    ports_start = 49152
-    ports_end = 65535
+
     if os.environ.get("SYNTROPY_PORT_RANGE"):
         try:
             ports = os.environ["SYNTROPY_PORT_RANGE"]
@@ -57,10 +58,12 @@ def find_free_port(SDN=False):
             ports_start = int(ports[0])
             ports_end = int(ports[1])
         except (IndexError, ValueError):
-            pass
-
-    elif SDN and get_ip_address() != get_public_ip():
+            return None
+    elif SDN and behind_nat():
         return 0
+    else:
+        ports_start = 49152
+        ports_end = 65535
 
     port = randint(ports_start, ports_end)
     portsinuse = []
