@@ -10,11 +10,11 @@ from pyroute2 import WireGuard
 
 from platform_agent.cmd.lsmod import module_loaded
 from platform_agent.cmd.wg_info import WireGuardRead
-from platform_agent.files.tmp_files import read_tmp_file
+from platform_agent.files.tmp_files import read_tmp_file, get_peer_metadata
 from platform_agent.routes import Routes
 from platform_agent.lib.ctime import now
 
-from platform_agent.wireguard.helpers import WG_NAME_PATTERN, ping_internal_ips, get_peer_info_all
+from platform_agent.wireguard.helpers import WG_NAME_PATTERN, ping_internal_ips, get_peer_info_all, WG_SYNTROPY_INT
 
 logger = logging.getLogger()
 
@@ -23,37 +23,36 @@ def get_routing_info(wg):
     routing_info = {}
     peers_internal_ips = []
     interfaces = read_tmp_file(file_type='iface_info')
-    res = {k: v for k, v in interfaces.items() if re.match(WG_NAME_PATTERN, k)}
-    for ifname in res.keys():
-        if not res[ifname].get('internal_ip'):
+    res = {k: v for k, v in interfaces.items() if re.match(WG_NAME_PATTERN, k) or k in WG_SYNTROPY_INT}
+    peers = []
+    for ifname in WG_SYNTROPY_INT:
+        peers += get_peer_info_all(ifname, wg, kind=res[ifname]['kind'])
+    for peer in peers:
+        try:
+            peer_internal_ip = next(
+                (
+                    ip for ip in peer['allowed_ips']
+                    if
+                    ipaddress.ip_address(ip.split('/')[0]) in ipaddress.ip_network(
+                        f"{res[WG_SYNTROPY_INT[0]]['internal_ip'].split('/')[0]}/16",
+                        False)
+                ),
+                None
+            )
+        except ValueError:
             continue
-        internal_ip = res[ifname]['internal_ip']
-        metadata = res[ifname]['metadata']
-        peers = get_peer_info_all(ifname, wg, kind=res[ifname]['kind'])
-        for peer in peers:
-            try:
-                peer_internal_ip = next(
-                    (
-                        ip for ip in peer['allowed_ips']
-                        if
-                        ipaddress.ip_address(ip.split('/')[0]) in ipaddress.ip_network(f"{internal_ip.split('/')[0]}/24",
-                                                                                       False)
-                    ),
-                    None
-                )
-            except ValueError:
-                continue
-            if not peer_internal_ip:
-                continue
-            peers_internal_ips.append(peer_internal_ip.split('/')[0])
-            peer['allowed_ips'].remove(peer_internal_ip)
-            for allowed_ip in peer['allowed_ips']:
-                if not routing_info.get(allowed_ip):
-                    routing_info[allowed_ip] = {'ifaces': {}}
-                routing_info[allowed_ip]['ifaces'][ifname] = {
-                    'internal_ip': peer_internal_ip,
-                    'metadata': metadata
-                }
+        if not peer_internal_ip:
+            continue
+        peers_internal_ips.append(peer_internal_ip.split('/')[0])
+        peer['allowed_ips'].remove(peer_internal_ip)
+        for allowed_ip in peer['allowed_ips']:
+            if not routing_info.get(allowed_ip):
+                routing_info[allowed_ip] = {'ifaces': {}}
+            routing_info[allowed_ip]['ifaces'][peer['ifname']] = {
+                "public_key": peer['public_key'],
+                'internal_ip': peer_internal_ip,
+                'metadata': "Empty"
+            }
     return routing_info, peers_internal_ips
 
 
@@ -73,7 +72,7 @@ def get_fastest_routes(wg):
         for iface, data in routes['ifaces'].items():
             int_ip = data['internal_ip'].split('/')[0]
             if ping_results[int_ip]['latency_ms'] < best_ping:
-                best_route = {'iface': iface, 'gw': data['internal_ip'], 'metadata': data.get('metadata')}
+                best_route = {'iface': iface, 'gw': data['internal_ip'], 'metadata': data.get('metadata'), "public_key": data.get('public_key')}
                 best_ping = ping_results[int_ip]['latency_ms']
         result[dest] = best_route
     return result, ping_results
@@ -96,11 +95,14 @@ class Rerouting(threading.Thread):
         previous_routes = {}
         while not self.stop_rerouting.is_set():
             new_routes, ping_data = get_fastest_routes(self.wg)
+            peers_active = []
             for dest, best_route in new_routes.items():
                 if not best_route or previous_routes.get(dest) == best_route:
                     continue
                 # Do rerouting logic with best_route
                 logger.debug(f"[REROUTING] Rerouting {dest} via {best_route}", extra={'metadata': best_route.get('metadata')})
+                peer_metadata = get_peer_metadata(public_key=best_route.get('public_key'))
+                peers_active.append({"connection_id": peer_metadata.get("connection_id"), "timestamp": str(time.time())})
                 try:
                     self.routes.ip_route_replace(
                         ifname=best_route['iface'], ip_list=[dest],
@@ -108,8 +110,17 @@ class Rerouting(threading.Thread):
                     )
                 except KeyError:  # catch if interface was deleted while executing this code
                     continue
+            self.send_active_route(peers_active)
             previous_routes = new_routes
             time.sleep(int(self.interval))
+
+    def send_active_route(self, data):
+        self.client.send_log(json.dumps({
+            'id': "ID." + str(time.time()),
+            'executed_at': now(),
+            'type': 'IFACES_PEERS_ACTIVE_DATA',
+            'data': data
+        }))
 
     def send_latency_data(self, data):
         self.client.send_log(json.dumps({

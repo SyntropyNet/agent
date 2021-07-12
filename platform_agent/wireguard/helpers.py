@@ -148,6 +148,7 @@ def get_peer_info_all(ifname, wg, kind=None):
     for peer in iface['peers']:
         try:
             results.append({
+                "ifname": ifname,
                 "public_key": peer['peer'],
                 "last_handshake": datetime.datetime.now().isoformat() if peer['latest_handshake'] else None,
                 "keep_alive_interval": int(''.join(filter(str.isdigit, peer.get('persistent_keepalive', '15')))),

@@ -52,7 +52,8 @@ class BWDataCollect(threading.Thread):
         rx_errors_after = BWDataCollect.get_int_info('rx_errors', iface)
         rx_packets_after = BWDataCollect.get_int_info('rx_packets', iface)
 
-        tx_speed_mbps = round((tx_bytes_after - tx_bytes) / 10000000.0, 4)
+
+        tx_speed_mbps = round((tx_bytes_after - tx_bytes) / 10000000.0, 4) * -1
         rx_speed_mbps = round((rx_bytes_after - rx_bytes) / 10000000.0, 4)
         tx_dropped = (tx_dropped_after - tx_dropped)
         tx_errors = (tx_errors_after - tx_errors)

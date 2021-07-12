@@ -6,6 +6,7 @@ from pyroute2 import IPRoute, NetlinkError
 from ipaddress import IPv4Network, ip_network
 
 from platform_agent.files.tmp_files import get_agent_id_by_text
+from platform_agent.wireguard.helpers import WG_SYNTROPY_INT
 
 logger = logging.getLogger()
 
@@ -15,8 +16,13 @@ class Routes:
         self.ip_route = IPRoute()
 
     def ip_route_add(self, ifname, ip_list, gw_ipv4):
+        syn_devices = []
         devices = self.ip_route.link_lookup(ifname=ifname)
         dev = devices[0]
+        for ifname in WG_SYNTROPY_INT:
+            devices = self.ip_route.link_lookup(ifname=ifname)
+            syn_devices.append(devices[0])
+
         statuses = []
         routes = self.ip_route.get_routes(family=socket.AF_INET)
         network_list = []
@@ -49,7 +55,7 @@ class Routes:
             except NetlinkError as error:
                 if error.code != 17:
                     result.update({'status': "ERROR", 'msg': str(error)})
-                elif dict(self.ip_route.get_routes(dst=formatted_ip.with_prefixlen)[0]['attrs']).get('RTA_OIF') != dev:
+                elif dict(self.ip_route.get_routes(dst=formatted_ip.with_prefixlen)[0]['attrs']).get('RTA_OIF') not in syn_devices:
 
                     logger.debug(f"[WG_CONF] add route failed [{ip}] - already exists")
                     result.update({'status': "ERROR", 'msg': "OVERLAP"})
