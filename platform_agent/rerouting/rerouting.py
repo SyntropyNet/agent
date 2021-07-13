@@ -25,34 +25,35 @@ def get_routing_info(wg):
     interfaces = read_tmp_file(file_type='iface_info')
     res = {k: v for k, v in interfaces.items() if re.match(WG_NAME_PATTERN, k) or k in WG_SYNTROPY_INT}
     peers = []
-    for ifname in WG_SYNTROPY_INT:
-        peers += get_peer_info_all(ifname, wg, kind=res[ifname]['kind'])
-    for peer in peers:
-        try:
-            peer_internal_ip = next(
-                (
-                    ip for ip in peer['allowed_ips']
-                    if
-                    ipaddress.ip_address(ip.split('/')[0]) in ipaddress.ip_network(
-                        f"{res[WG_SYNTROPY_INT[0]]['internal_ip'].split('/')[0]}/16",
-                        False)
-                ),
-                None
-            )
-        except ValueError:
-            continue
-        if not peer_internal_ip:
-            continue
-        peers_internal_ips.append(peer_internal_ip.split('/')[0])
-        peer['allowed_ips'].remove(peer_internal_ip)
-        for allowed_ip in peer['allowed_ips']:
-            if not routing_info.get(allowed_ip):
-                routing_info[allowed_ip] = {'ifaces': {}}
-            routing_info[allowed_ip]['ifaces'][peer['ifname']] = {
-                "public_key": peer['public_key'],
-                'internal_ip': peer_internal_ip,
-                'metadata': "Empty"
-            }
+    if res:
+        for ifname in WG_SYNTROPY_INT:
+            peers += get_peer_info_all(ifname, wg, kind=res[ifname]['kind'])
+        for peer in peers:
+            try:
+                peer_internal_ip = next(
+                    (
+                        ip for ip in peer['allowed_ips']
+                        if
+                        ipaddress.ip_address(ip.split('/')[0]) in ipaddress.ip_network(
+                            f"{res[WG_SYNTROPY_INT[0]]['internal_ip'].split('/')[0]}/16",
+                            False)
+                    ),
+                    None
+                )
+            except ValueError:
+                continue
+            if not peer_internal_ip:
+                continue
+            peers_internal_ips.append(peer_internal_ip.split('/')[0])
+            peer['allowed_ips'].remove(peer_internal_ip)
+            for allowed_ip in peer['allowed_ips']:
+                if not routing_info.get(allowed_ip):
+                    routing_info[allowed_ip] = {'ifaces': {}}
+                routing_info[allowed_ip]['ifaces'][peer['ifname']] = {
+                    "public_key": peer['public_key'],
+                    'internal_ip': peer_internal_ip,
+                    'metadata': "Empty"
+                }
     return routing_info, peers_internal_ips
 
 
@@ -100,9 +101,9 @@ class Rerouting(threading.Thread):
                 if not best_route or previous_routes.get(dest) == best_route:
                     continue
                 # Do rerouting logic with best_route
-                logger.debug(f"[REROUTING] Rerouting {dest} via {best_route}", extra={'metadata': best_route.get('metadata')})
+                logger.info(f"[REROUTING] Rerouting {dest} via {best_route}", extra={'metadata': best_route.get('metadata')})
                 peer_metadata = get_peer_metadata(public_key=best_route.get('public_key'))
-                peers_active.append({"connection_id": peer_metadata.get("connection_id"), "timestamp": str(time.time())})
+                peers_active.append({"connection_id": peer_metadata.get("connection_id"), "timestamp": now()})
                 try:
                     self.routes.ip_route_replace(
                         ifname=best_route['iface'], ip_list=[dest],
@@ -110,7 +111,8 @@ class Rerouting(threading.Thread):
                     )
                 except KeyError:  # catch if interface was deleted while executing this code
                     continue
-            self.send_active_route(peers_active)
+            if peers_active:
+                self.send_active_route(peers_active)
             previous_routes = new_routes
             time.sleep(int(self.interval))
 
