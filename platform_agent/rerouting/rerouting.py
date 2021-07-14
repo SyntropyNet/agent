@@ -72,7 +72,7 @@ def get_fastest_routes(wg):
         best_ping = 9999
         for iface, data in routes['ifaces'].items():
             int_ip = data['internal_ip'].split('/')[0]
-            if ping_results[int_ip]['latency_ms'] < best_ping:
+            if ping_results[int_ip]['latency_ms'] and ping_results[int_ip]['latency_ms'] < best_ping:
                 best_route = {'iface': iface, 'gw': data['internal_ip'], 'metadata': data.get('metadata'), "public_key": data.get('public_key')}
                 best_ping = ping_results[int_ip]['latency_ms']
         result[dest] = best_route
