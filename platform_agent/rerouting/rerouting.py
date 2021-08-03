@@ -27,7 +27,8 @@ def get_routing_info(wg):
     peers = []
     if res:
         for ifname in WG_SYNTROPY_INT:
-            peers += get_peer_info_all(ifname, wg, kind=res[ifname]['kind'])
+            if res.get(ifname):
+                peers += get_peer_info_all(ifname, wg, kind=res[ifname]['kind'])
         for peer in peers:
             try:
                 peer_internal_ip = next(

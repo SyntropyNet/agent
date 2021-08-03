@@ -74,6 +74,8 @@ class Routes:
 
     def ip_route_del(self, ifname, ip_list, scope=None):
         devices = self.ip_route.link_lookup(ifname=ifname)
+        if not len(devices):
+            return
         dev = devices[0]
         for ip in ip_list:
             try:

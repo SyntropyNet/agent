@@ -33,7 +33,7 @@ def delete_interface(ifname):
 
 def create_interface(ifname):
     try:
-        subprocess.run(['ip', 'link', 'add', 'dev', ifname, 'type', 'wireguard'], check=True, stderr=subprocess.DEVNULL)
+        subprocess.run(['ip', 'link', 'add', 'dev', ifname, 'type', 'wireguard'], check=True, stderr=subprocess.DEVNULL, timeout=5)
     except subprocess.CalledProcessError:
         pass
 
