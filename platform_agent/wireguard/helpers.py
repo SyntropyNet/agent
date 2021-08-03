@@ -54,7 +54,6 @@ def behind_nat():
     return bool(get_ip_address() != get_public_ip())
 
 def find_free_port(SDN=False):
-    logger.info(f"[FIND_FREE_PORT] {os.environ.get('SYNTROPY_PORT_RANGE')}")
     if os.environ.get("SYNTROPY_PORT_RANGE"):
         try:
             ports = os.environ["SYNTROPY_PORT_RANGE"]
@@ -63,8 +62,6 @@ def find_free_port(SDN=False):
             ports_end = int(ports[1])
         except (IndexError, ValueError):
             return None
-    elif SDN and behind_nat():
-        return 0
     else:
         ports_start = 49152
         ports_end = 65535

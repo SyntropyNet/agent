@@ -33,17 +33,13 @@ def delete_interface(ifname):
 
 def create_interface(ifname):
     try:
-        logger.info(f"[WG_CONF] - Ip link add {ifname}")
         subprocess.run(['ip', 'link', 'add', 'dev', ifname, 'type', 'wireguard'], check=True, timeout=5)
-        logger.info(f"[WG_CONF] - Ip link added {ifname}")
     except subprocess.CalledProcessError:
-        logger.info(f"[WG_CONF] - {ifname} check ok")
         pass
 
 
 def set_interface_up(ifname):
     try:
-        logger.info(f"[WG_CONF] - Set interface up {ifname}")
         subprocess.run(['ip', 'link', 'set', 'up', ifname], check=True, stderr=subprocess.DEVNULL)
     except subprocess.CalledProcessError:
         pass
@@ -161,53 +157,35 @@ class WgConf():
         else:
             self.wg.create_interface(ifname)
         set_interface_up(ifname)
-        logger.info(f"[WG_CONF] - Interface Up {ifname}")
         set_interface_ip(ifname, internal_ip)
         self.routes.clear_unused_iface_addrs(ifname, internal_ip.split('/')[0])
-        logger.info(f"[WG_CONF] - Created interface {ifname}")
         if not listen_port:
-            logger.info(f"[WG_CONF] - searching Listen port")
             listen_port = find_free_port(bool('SDN' in ifname))
-            logger.info(f"[WG_CONF] - Listen port {listen_port}")
         try:
-            logger.info(f"[WG_CONF] - wg set {ifname}, {listen_port}")
             self.wg.set(
                 ifname,
                 private_key=private_key,
                 listen_port=listen_port
             )
-            logger.info(f"[WG_CONF] - after wg set {ifname}, {listen_port}")
 
         except NetlinkError as error:
-            logger.info(f"[WG_CONF] - wg set error")
             if error.code != 98:
                 raise
             else:
                 # if port was taken before creating.
-                logger.info(f"[WG_CONF] - wg set after error")
-
                 self.wg.set(
                     ifname,
                     private_key=private_key,
                 )
-                logger.info(f"[WG_CONF] - wg set after error done")
-        logger.info(f"[WG_CONF] - new listen_port")
         listen_port = self.get_listening_port(ifname)
-        logger.info(f"[WG_CONF] - new listen_port {listen_port}")
         if not listen_port:
-            logger.info(f"[WG_CONF] - if not listen_port")
             listen_port = find_free_port(bool('SDN' in ifname))
-            logger.info(f"[WG_CONF] - if not listen_port {listen_port}")
-            logger.info(f"[WG_CONF] - if not listen_port before wg set")
             self.wg.set(
                 ifname,
                 private_key=private_key,
                 listen_port=listen_port if listen_port else None
             )
-            logger.info(f"[WG_CONF] - if not listen_port after wg set")
-        logger.info(f"[WG_CONF] - add_iptables_forward")
         add_iptables_forward(ifname)
-        logger.info(f"[WG_CONF] - after add_iptables_forward")
         result = {
             "public_key": public_key,
             "listen_port": int(listen_port),
@@ -221,6 +199,8 @@ class WgConf():
         return result
 
     def add_peer(self, ifname, public_key, allowed_ips, gw_ipv4, endpoint_ipv4=None, endpoint_port=None):
+        if "SYNTROPY" not in ifname:
+            ifname = "SYNTROPY_" + ifname
         peer_metadata = get_peer_metadata(public_key=public_key)
         if self.wg_kernel:
             try:
