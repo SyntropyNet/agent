@@ -33,13 +33,17 @@ def delete_interface(ifname):
 
 def create_interface(ifname):
     try:
-        subprocess.run(['ip', 'link', 'add', 'dev', ifname, 'type', 'wireguard'], check=True, stderr=subprocess.DEVNULL, timeout=5)
+        logger.info(f"[WG_CONF] - Ip link add {ifname}")
+        subprocess.run(['ip', 'link', 'add', 'dev', ifname, 'type', 'wireguard'], check=True, timeout=5)
+        logger.info(f"[WG_CONF] - Ip link added {ifname}")
     except subprocess.CalledProcessError:
+        logger.info(f"[WG_CONF] - {ifname} check ok")
         pass
 
 
 def set_interface_up(ifname):
     try:
+        logger.info(f"[WG_CONF] - Set interface up {ifname}")
         subprocess.run(['ip', 'link', 'set', 'up', ifname], check=True, stderr=subprocess.DEVNULL)
     except subprocess.CalledProcessError:
         pass
