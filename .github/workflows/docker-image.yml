@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - master
-      - v0.0.84
+      - v0.0.85
     tags:
       - '*'
 
@@ -51,7 +51,7 @@ jobs:
           tags: syntropynet/agent:devel
       - name: PROD Build and push
         # BRANCH_STABLE_VERSION
-        if: github.ref == 'refs/heads/v0.0.84'
+        if: github.ref == 'refs/heads/v0.0.85'
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -60,4 +60,4 @@ jobs:
           tags: |
             syntropynet/agent:prod
             syntropynet/agent:stable
-            syntropynet/agent:v0.0.84
+            syntropynet/agent:v0.0.85
