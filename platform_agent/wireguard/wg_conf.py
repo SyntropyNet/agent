@@ -166,38 +166,55 @@ class WgConf():
         self.routes.clear_unused_iface_addrs(ifname, internal_ip.split('/')[0])
         logger.info(f"[WG_CONF] - Created interface {ifname}")
         if not listen_port:
+            logger.info(f"[WG_CONF] - searching Listen port")
             listen_port = find_free_port(bool('SDN' in ifname))
+            logger.info(f"[WG_CONF] - Listen port {listen_port}")
         try:
+            logger.info(f"[WG_CONF] - wg set {ifname}, {listen_port}")
             self.wg.set(
                 ifname,
                 private_key=private_key,
                 listen_port=listen_port
             )
+            logger.info(f"[WG_CONF] - after wg set {ifname}, {listen_port}")
+
         except NetlinkError as error:
+            logger.info(f"[WG_CONF] - wg set error")
             if error.code != 98:
                 raise
             else:
                 # if port was taken before creating.
+                logger.info(f"[WG_CONF] - wg set after error")
+
                 self.wg.set(
                     ifname,
                     private_key=private_key,
                 )
+                logger.info(f"[WG_CONF] - wg set after error done")
+        logger.info(f"[WG_CONF] - new listen_port")
         listen_port = self.get_listening_port(ifname)
+        logger.info(f"[WG_CONF] - new listen_port {listen_port}")
         if not listen_port:
+            logger.info(f"[WG_CONF] - if not listen_port")
             listen_port = find_free_port(bool('SDN' in ifname))
+            logger.info(f"[WG_CONF] - if not listen_port {listen_port}")
+            logger.info(f"[WG_CONF] - if not listen_port before wg set")
             self.wg.set(
                 ifname,
                 private_key=private_key,
                 listen_port=listen_port if listen_port else None
             )
+            logger.info(f"[WG_CONF] - if not listen_port after wg set")
+        logger.info(f"[WG_CONF] - add_iptables_forward")
         add_iptables_forward(ifname)
+        logger.info(f"[WG_CONF] - after add_iptables_forward")
         result = {
             "public_key": public_key,
             "listen_port": int(listen_port),
             "ifname": ifname,
             "internal_ip": internal_ip
         }
-        logger.debug(
+        logger.info(
             f"[WG_CONF] - interface_created {result}",
             extra={'metadata': peer_metadata}
         )

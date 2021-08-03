@@ -4,6 +4,8 @@ import ipaddress
 import re
 import psutil
 import socket
+import logging
+
 from random import randint
 
 import requests
@@ -13,6 +15,8 @@ from pyroute2 import NetlinkError
 from platform_agent.cmd.lsmod import module_loaded, is_tool
 from platform_agent.cmd.wg_info import WireGuardRead
 from platform_agent.network.iface_watcher import read_tmp_file
+logger = logging.getLogger()
+
 
 WG_NAME_PATTERN = '[0-9]{10}(s1|s2|s3|p0)+(g|m|p)[Nn][Oo]'
 WG_SYNTROPY_INT = ['SYNTROPY_PUBLIC', 'SYNTROPY_SDN1', 'SYNTROPY_SDN2', 'SYNTROPY_SDN3']
@@ -50,7 +54,7 @@ def behind_nat():
     return bool(get_ip_address() != get_public_ip())
 
 def find_free_port(SDN=False):
-
+    logger.info(f"[FIND_FREE_PORT] {os.environ.get('SYNTROPY_PORT_RANGE')}")
     if os.environ.get("SYNTROPY_PORT_RANGE"):
         try:
             ports = os.environ["SYNTROPY_PORT_RANGE"]
@@ -67,15 +71,16 @@ def find_free_port(SDN=False):
 
     port = randint(ports_start, ports_end)
     portsinuse = []
-    while True:
+    for port in range(ports_start, ports_end + 1):
         conns = psutil.net_connections()
         for conn in conns:
             portsinuse.append(conn.laddr[1])
         if port in portsinuse:
-            port = randint(ports_start, ports_end)
+            continue
         else:
-            break
-    return port
+            return port
+    logger.info(f"[FIND_FREE_PORT] Could not find free port in range {os.environ.get('SYNTROPY_PORT_RANGE')}")
+    return None
 
 
 def get_iface_public_key(ifname):
