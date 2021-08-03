@@ -157,9 +157,10 @@ class WgConf():
         else:
             self.wg.create_interface(ifname)
         set_interface_up(ifname)
+        logger.info(f"[WG_CONF] - Interface Up {ifname}")
         set_interface_ip(ifname, internal_ip)
         self.routes.clear_unused_iface_addrs(ifname, internal_ip.split('/')[0])
-
+        logger.info(f"[WG_CONF] - Created interface {ifname}")
         if not listen_port:
             listen_port = find_free_port(bool('SDN' in ifname))
         try:
