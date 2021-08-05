@@ -60,6 +60,6 @@ jobs:
           tags: |
             syntropynet/agent:prod
             syntropynet/agent:stable
-            syntropynet/agent:v0.0.85
+            syntropynet/agent:v0.0.86
             syntropynet/agent:debug
             syntropynet/agent:latest
