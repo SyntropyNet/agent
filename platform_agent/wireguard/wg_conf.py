@@ -185,7 +185,8 @@ class WgConf():
                 private_key=private_key,
                 listen_port=listen_port if listen_port else None
             )
-        add_iptables_forward(ifname)
+        if not os.environ.get("SYNTROPY_CREATE_IPTABLES_RULES", '').lower() == "disabled":
+            add_iptables_forward(ifname)
         result = {
             "public_key": public_key,
             "listen_port": int(listen_port),
@@ -199,6 +200,8 @@ class WgConf():
         return result
 
     def add_peer(self, ifname, public_key, allowed_ips, gw_ipv4, endpoint_ipv4=None, endpoint_port=None):
+        if "SYNTROPY" not in ifname:
+            ifname = "SYNTROPY_" + ifname
         peer_metadata = get_peer_metadata(public_key=public_key)
         if self.wg_kernel:
             try:

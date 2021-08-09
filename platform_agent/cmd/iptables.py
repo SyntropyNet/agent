@@ -82,10 +82,11 @@ def add_iptables_forward(ifname, version='-nft'):
             check=False,
             stderr=subprocess.DEVNULL
         )
-        subprocess.run(
-            [f'iptables{version}', '-t', 'nat', '-A', 'POSTROUTING', '-o', get_default_iface_name(), '-j', 'MASQUERADE'],
-            check=False,
-            stderr=subprocess.DEVNULL
-        )
+        if "PUBLIC" in ifname:
+            subprocess.run(
+                [f'iptables{version}', '-t', 'nat', '-A', 'POSTROUTING', '-o', get_default_iface_name(), '-j', 'MASQUERADE'],
+                check=False,
+                stderr=subprocess.DEVNULL
+            )
     if version == '-nft':
         add_iptables_forward(ifname, version='-legacy')

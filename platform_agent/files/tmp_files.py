@@ -17,9 +17,9 @@ def read_tmp_file(file_type='iface_info'):
     return data
 
 
-def update_tmp_file(data, file_name):
+def update_tmp_file(data, file_name, mode="w+"):
     iface_info_path = f"{AGENT_PATH_TMP}/{file_name}"
-    with open(iface_info_path, 'w+') as file:
+    with open(iface_info_path, mode) as file:
         json.dump(data, file, indent=4)
         file.close()
 
