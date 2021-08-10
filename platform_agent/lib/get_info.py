@@ -15,10 +15,10 @@ logger = logging.getLogger()
 
 def get_public_ip():
     try:
-        return requests.get("https://ip.syntropystack.com/").json()
+        return requests.get("https://ip.syntropystack.com/", timeout=2).json()
     except (NewConnectionError, SSLError, ConnectionError) as e:
         logger.warning(f"https://ip.syntropystack.com - could not be reached {e}")
-        return requests.get('https://ident.me').text
+        return requests.get('https://ident.me', timeout=5).text
 
 
 def get_ip_addr():
