@@ -57,10 +57,10 @@ def add_iptable_rules(ips: list, version='-nft'):
         add_iptable_rules(ips, version='-legacy')
 
 
-def delete_iptable_rules(ips: list, version='-nft'):
+def delete_iptable_rules(ips: list, chain='SYNTROPY_CHAIN', version='-nft'):
     for ip in ips:
         subprocess.run(
-            [f'iptables{version}', '-D', 'FORWARD', '-p', 'all', '-s', ip, '-j', 'ACCEPT'],
+            [f'iptables{version}', '-D', chain, '-p', 'all', '-s', ip, '-j', 'ACCEPT'],
             check=False,
             stderr=subprocess.DEVNULL
         )
