@@ -202,6 +202,8 @@ class WgConf():
     def add_peer(self, ifname, public_key, allowed_ips, gw_ipv4, endpoint_ipv4=None, endpoint_port=None):
         if "SYNTROPY" not in ifname:
             ifname = "SYNTROPY_" + ifname
+        if "0.0.0.0/0" in allowed_ips and not os.environ.get('VPN_CLIENT') == 'true':
+            allowed_ips.remove("0.0.0.0/0")
         peer_metadata = get_peer_metadata(public_key=public_key)
         if self.wg_kernel:
             try:
