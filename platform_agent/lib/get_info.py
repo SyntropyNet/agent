@@ -13,13 +13,21 @@ from platform_agent.config.settings import Config
 logger = logging.getLogger()
 
 
+def get_public_ip():
+    try:
+        return requests.get("https://ip.syntropystack.com/").json()
+    except (NewConnectionError, SSLError, ConnectionError) as e:
+        logger.warning(f"https://ip.syntropystack.com - could not be reached {e}")
+        return requests.get('https://ident.me').text
+
+
 def get_ip_addr():
     try:
-        resp = requests.get("https://ip.syntropystack.com/")
         return {
-            "external_ip": resp.json()
+            "external_ip": get_public_ip()
         }
-    except (NewConnectionError, SSLError, ConnectionError):
+    except (NewConnectionError, SSLError, ConnectionError) as e:
+        logger.warning(f"https://ident.me - could not be reached {e}")
         return {}
 
 
