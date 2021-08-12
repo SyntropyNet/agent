@@ -154,8 +154,8 @@ def get_peer_info_all(ifname, wg, kind=None):
                 "last_handshake": datetime.datetime.now().isoformat() if peer['latest_handshake'] else None,
                 "keep_alive_interval": int(''.join(filter(str.isdigit, peer.get('persistent_keepalive', '15')))),
                 "allowed_ips": peer['allowed_ips'],
-                "tx_bytes": peer['tx_bytes'],
-                "rx_bytes": peer['rx_bytes'],
+                "tx_bytes": int(peer['tx_bytes']),
+                "rx_bytes": int(peer['rx_bytes']),
                 "timestamp": peer['timestamp'],
             })
         except KeyError:
