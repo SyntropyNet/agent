@@ -3,6 +3,7 @@ import os
 import json
 
 import dataclasses
+from datetime import datetime
 from typing import List
 
 
@@ -22,7 +23,9 @@ class WgPeer:
     latest_handshake: str = None
     persistent_keepalive: str = None
     transfer: str = None
-
+    tx_bytes: str = None
+    rx_bytes: str = None
+    timestamp: str = None
 
 @dataclasses.dataclass
 class WgInterface:
@@ -39,6 +42,28 @@ class WireGuardRead:
         self.parameter_regex = r'(^.+): (.+$)'
         self.stdin = None
 
+    def get_bytes(self, transfer):
+        bytes = transfer.split(', ')
+        rx_bytes = bytes[0]
+        tx_bytes = bytes[1]
+        if "k" in rx_bytes.lower():
+            rx_bytes = float(rx_bytes.split(' ')[0]) * 1000
+        elif "m" in rx_bytes.lower():
+            rx_bytes = float(rx_bytes.split(' ')[0]) * 1000000
+        elif "g" in rx_bytes.lower():
+            rx_bytes = float(rx_bytes.split(' ')[0]) * 1000000 * 1000
+        if "k" in tx_bytes.lower():
+            tx_bytes = float(tx_bytes.split(' ')[0]) * 1000
+        elif "m" in tx_bytes.lower():
+            tx_bytes = float(tx_bytes.split(' ')[0]) * 1000000
+        elif "g" in tx_bytes.lower():
+            tx_bytes = float(tx_bytes.split(' ')[0]) * 1000000 * 1000
+        if type(rx_bytes) == str:
+            rx_bytes = 0
+        if type(tx_bytes) == str:
+            tx_bytes = 0
+        return rx_bytes, tx_bytes
+
     def wg_info(self, ifname=None):
         if ifname:
             grep = f" {ifname}"
@@ -51,7 +76,12 @@ class WireGuardRead:
                 interface = WgInterface(peers=[], **i)
                 output.append(interface)
             else:
-                interface.peers.append(WgPeer(**i))
+                data = WgPeer(**i)
+                rx_bytes, tx_bytes = self.get_bytes(data.transfer)
+                data.rx_bytes = rx_bytes
+                data.tx_bytes = tx_bytes
+                data.timestamp = datetime.now().timestamp()
+                interface.peers.append(data)
         output = json.loads(json.dumps(output, cls=DataclassJSONEncoder))
         return output
 

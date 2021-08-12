@@ -35,7 +35,7 @@ class AgentApi:
         if prod_mode:
             threading.Thread(target=self.wg_executor.run).start()
             threading.Thread(target=self.bw_data_collector.run).start()
-            self.network_exporter = NetworkExporter().start()
+            # self.network_exporter = NetworkExporter().start()
             self.wg_peers = WireguardPeerWatcher(self.runner).start()
             self.interface_watcher = InterfaceWatcher().start()
             if module_loaded("wireguard"):

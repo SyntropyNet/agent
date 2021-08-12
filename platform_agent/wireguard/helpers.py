@@ -154,6 +154,9 @@ def get_peer_info_all(ifname, wg, kind=None):
                 "last_handshake": datetime.datetime.now().isoformat() if peer['latest_handshake'] else None,
                 "keep_alive_interval": int(''.join(filter(str.isdigit, peer.get('persistent_keepalive', '15')))),
                 "allowed_ips": peer['allowed_ips'],
+                "tx_bytes": peer['tx_bytes'],
+                "rx_bytes": peer['rx_bytes'],
+                "timestamp": peer['timestamp'],
             })
         except KeyError:
             continue
@@ -161,7 +164,7 @@ def get_peer_info_all(ifname, wg, kind=None):
 
 
 def get_peer_ips(ifname, wg, internal_ip, kind=None):
-    peers_info = []
+    peers_info = {}
     peers_internal_ip = []
     peers = get_peer_info_all(ifname, wg, kind=kind)
     for peer in peers:
@@ -180,7 +183,7 @@ def get_peer_ips(ifname, wg, internal_ip, kind=None):
         if not peer_internal_ip:
             continue
         peer.update({'internal_ip': peer_internal_ip.split('/')[0]})
-        peers_info.append(peer)
+        peers_info[peer['public_key']] = peer
         peers_internal_ip.append(peer_internal_ip.split('/')[0])
     return peers_info, peers_internal_ip
 
@@ -214,7 +217,7 @@ def ping_internal_ips(ips, count=4, interval=0.5, icmp_id=10000):
 
 
 def merged_peer_info(wg):
-    result = []
+    result = {}
     peers_ips = []
     interfaces = read_tmp_file(file_type='iface_info')
     res = {k: v for k, v in interfaces.items() if re.match(WG_NAME_PATTERN, k) or k in WG_SYNTROPY_INT}
@@ -226,15 +229,13 @@ def merged_peer_info(wg):
         iface_public_key = get_iface_public_key(ifname)
         if not iface_public_key:
             continue
-        result.append(
-            {
-                "iface": ifname,
+        result[ifname] = {
                 "iface_public_key": iface_public_key,
                 "peers": peer_info
             }
-        )
+
     pings = ping_internal_ips(peers_ips, count=1, interval=0.3)
-    for iface in result:
-        for peer in iface['peers']:
-            peer.update(pings[peer['internal_ip']])
+    for iface, info in result.items():
+        for public_key, data in info['peers'].items():
+            data.update(pings[data['internal_ip']])
     return result
