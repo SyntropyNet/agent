@@ -32,11 +32,16 @@ def get_ip_addr():
 
 
 def get_location():
-    return {
-        "location_lat": os.environ.get('SYNTROPY_LAT'),
-        "location_lon": os.environ.get('SYNTROPY_LON'),
-    }
-
+    try:
+        return {
+            "location_lat": float(os.environ.get('SYNTROPY_LAT')),
+            "location_lon": float(os.environ.get('SYNTROPY_LON')),
+        }
+    except ValueError:
+        return {
+            "location_lat": None,
+            "location_lon": None
+        }
 
 def get_network_info():
     network_info = []
