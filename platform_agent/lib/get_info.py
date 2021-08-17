@@ -37,7 +37,7 @@ def get_location():
             "location_lat": float(os.environ.get('SYNTROPY_LAT')),
             "location_lon": float(os.environ.get('SYNTROPY_LON')),
         }
-    except ValueError:
+    except (ValueError, TypeError):
         return {
             "location_lat": None,
             "location_lon": None
