@@ -43,7 +43,10 @@ class WireGuardRead:
         self.stdin = None
 
     def get_bytes(self, transfer):
-        bytes = transfer.split(', ')
+        try:
+            bytes = transfer.split(', ')
+        except AttributeError:
+            return 0, 0
         rx_bytes = bytes[0]
         tx_bytes = bytes[1]
         if "k" in rx_bytes.lower():
