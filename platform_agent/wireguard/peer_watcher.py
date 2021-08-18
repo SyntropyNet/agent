@@ -65,7 +65,7 @@ class WireguardPeerWatcher(threading.Thread):
             if not peer_info:
                 time.sleep(1)
                 continue
-            self.client.send_log(json.dumps({
+            self.client.send(json.dumps({
                 'id': "-",
                 'executed_at': now(),
                 'type': 'IFACES_PEERS_BW_DATA',
