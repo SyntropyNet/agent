@@ -39,7 +39,7 @@ class AutopingClient(threading.Thread):
                     break
 
             self.client.send_log(json.dumps({
-                'id': "ID." + str(time.time()),
+                'id': "-",
                 'executed_at': now(),
                 'type': 'AUTO_PING',
                 'data': {"pings": pings}

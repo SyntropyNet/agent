@@ -88,7 +88,7 @@ class BWDataCollect(threading.Thread):
                 if not result:
                     continue
                 self.client.send_log(json.dumps({
-                    'id': "UNKNOWN",
+                    'id': "-",
                     'executed_at': now(),
                     'type': 'IFACES_BW_DATA',
                     'data': result

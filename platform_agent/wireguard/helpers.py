@@ -117,29 +117,31 @@ def get_peer_info(ifname, wg, kind=None):
 
 def get_peer_info_all(ifname, wg, kind=None):
     results = []
-    # TODO NEED FIX pyroute2 wireguard info solution, because of missing peers when getting info.
-    # if kind == 'wireguard' or os.environ.get("SYNTROPY_WIREGUARD"):
-    #     try:
-    #         ss = wg.info(ifname)
-    #     except NetlinkError as e:
-    #         return results
-    #     wg_info = dict(ss[0]['attrs'])
-    #     peers = wg_info.get('WGDEVICE_A_PEERS', [])
-    #     for peer in peers:
-    #         try:
-    #             peer_dict = dict(peer['attrs'])
-    #             results.append({
-    #                 "public_key": peer_dict['WGPEER_A_PUBLIC_KEY'].decode('utf-8'),
-    #                 "allowed_ips": [allowed_ip['addr'] for allowed_ip in peer_dict['WGPEER_A_ALLOWEDIPS']],
-    #                 "last_handshake": datetime.datetime.strptime(
-    #                     peer_dict['WGPEER_A_LAST_HANDSHAKE_TIME']['latest handshake'],
-    #                     "%a %b %d %H:%M:%S %Y").isoformat(),
-    #                 "keep_alive_interval": peer_dict['WGPEER_A_PERSISTENT_KEEPALIVE_INTERVAL'],
-    #                 "rx_bytes": peer_dict['WGPEER_A_RX_BYTES'],
-    #                 "tx_bytes": peer_dict['WGPEER_A_TX_BYTES'],
-    #             })
-    #         except KeyError:
-    #             continue
+    if kind == 'wireguard' or os.environ.get("SYNTROPY_WIREGUARD"):
+        try:
+            ss = wg.info(ifname)
+        except NetlinkError as e:
+            return results
+        wg_info = dict(ss[0]['attrs'])
+        peers = wg_info.get('WGDEVICE_A_PEERS', [])
+        for peer in peers:
+            try:
+                peer_dict = dict(peer['attrs'])
+                results.append({
+                    "ifname": ifname,
+                    "public_key": peer_dict['WGPEER_A_PUBLIC_KEY'].decode('utf-8'),
+                    "allowed_ips": [allowed_ip['addr'] for allowed_ip in peer_dict['WGPEER_A_ALLOWEDIPS']],
+                    "last_handshake": datetime.datetime.strptime(
+                        peer_dict['WGPEER_A_LAST_HANDSHAKE_TIME']['latest handshake'],
+                        "%a %b %d %H:%M:%S %Y").isoformat(),
+                    "keep_alive_interval": peer_dict['WGPEER_A_PERSISTENT_KEEPALIVE_INTERVAL'],
+                    "rx_bytes": peer_dict['WGPEER_A_RX_BYTES'],
+                    "tx_bytes": peer_dict['WGPEER_A_TX_BYTES'],
+                    "timestamp": datetime.datetime.now().timestamp(),
+                })
+            except ConnectionError:
+                continue
+        return results
 
     wg = WireGuardRead()
     ifaces = wg.wg_info(ifname)
