@@ -1,4 +1,3 @@
-import json
 import os
 import socket
 import base64
@@ -15,9 +14,9 @@ from platform_agent.cmd.iptables import add_iptable_rules, delete_iptable_rules,
 from platform_agent.cmd.lsmod import module_loaded
 from platform_agent.cmd.wg_show import get_wg_listen_port
 from platform_agent.files.tmp_files import get_peer_metadata
-from platform_agent.lib.ctime import now
 from platform_agent.routes import Routes
-from platform_agent.wireguard.helpers import find_free_port, get_peer_info, WG_NAME_PATTERN, WG_SYNTROPY_INT
+from platform_agent.wireguard.helpers import find_free_port, get_peer_info, WG_NAME_PATTERN, WG_SYNTROPY_INT, \
+    set_iface_mtu
 
 logger = logging.getLogger()
 
@@ -166,7 +165,7 @@ class WgConf():
             self.wg.set(
                 ifname,
                 private_key=private_key,
-                listen_port=listen_port
+                listen_port=listen_port,
             )
         except NetlinkError as error:
             if error.code != 98:
@@ -187,6 +186,8 @@ class WgConf():
             )
         if not os.environ.get("SYNTROPY_CREATE_IPTABLES_RULES", '').lower() == "disabled":
             add_iptables_forward(ifname)
+        if os.environ.get("SYNTROPY_MTU"):
+            set_iface_mtu(ifname, os.environ["SYNTROPY_MTU"])
         result = {
             "public_key": public_key,
             "listen_port": int(listen_port),

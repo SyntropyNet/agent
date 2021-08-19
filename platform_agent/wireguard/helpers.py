@@ -10,13 +10,13 @@ from random import randint
 
 import requests
 from icmplib import multiping
-from pyroute2 import NetlinkError
+from pyroute2 import NetlinkError, IPRoute
 
 from platform_agent.cmd.lsmod import module_loaded, is_tool
 from platform_agent.cmd.wg_info import WireGuardRead
 from platform_agent.network.iface_watcher import read_tmp_file
-logger = logging.getLogger()
 
+logger = logging.getLogger()
 
 WG_NAME_PATTERN = '[0-9]{10}(s1|s2|s3|p0)+(g|m|p)[Nn][Oo]'
 WG_SYNTROPY_INT = ['SYNTROPY_PUBLIC', 'SYNTROPY_SDN1', 'SYNTROPY_SDN2', 'SYNTROPY_SDN3']
@@ -39,10 +39,12 @@ def get_connection_status(latency_ms, packet_loss):
     )
     return res
 
+
 def get_ip_address():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect(("8.8.8.8", 80))
     return s.getsockname()[0]
+
 
 def get_public_ip():
     try:
@@ -50,8 +52,10 @@ def get_public_ip():
     except:
         return requests.get('https://ident.me').text
 
+
 def behind_nat():
     return bool(get_ip_address() != get_public_ip())
+
 
 def find_free_port(SDN=False):
     if os.environ.get("SYNTROPY_PORT_RANGE"):
@@ -75,7 +79,8 @@ def find_free_port(SDN=False):
             continue
         else:
             return port
-    logger.debug(f"[FIND_FREE_PORT] Could not find free port in range {os.environ.get('SYNTROPY_PORT_RANGE')} will use default")
+    logger.debug(
+        f"[FIND_FREE_PORT] Could not find free port in range {os.environ.get('SYNTROPY_PORT_RANGE')} will use default")
     return None
 
 
@@ -238,3 +243,14 @@ def merged_peer_info(wg):
         for peer in iface['peers']:
             peer.update(pings[peer['internal_ip']])
     return result
+
+
+def set_iface_mtu(ifname: str, mtu: str):
+    if not mtu.isdigit():
+        logger.warning(f"[ENV_VARIABLE] MTU is not a number | {mtu}")
+        return
+    ip = IPRoute()
+    # get interface index
+    iface_index = ip.link_lookup(ifname=ifname)[0]
+    # set MTU
+    ip.link("set", index=iface_index, mtu=int(mtu))
