@@ -29,3 +29,16 @@ def read_tmp_file(file_name='iface_info'):
     except FileNotFoundError:
         data = {}
     return data
+
+
+def format_results_for_controller(peer_info):
+    result = []
+    for iface in peer_info.keys():
+        result.append(
+            {
+                "iface": iface,
+                "iface_public_key": peer_info[iface]['iface_public_key'],
+                "peers": list(peer_info[iface]['peers'].values())
+            }
+        )
+    return result

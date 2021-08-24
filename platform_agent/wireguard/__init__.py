@@ -1,2 +1,3 @@
 from platform_agent.wireguard.wg_conf import WgConf, WgConfException
 from platform_agent.wireguard.peer_watcher import WireguardPeerWatcher
+from platform_agent.wireguard.peer_data_collector import WireguardPeerDataCollector

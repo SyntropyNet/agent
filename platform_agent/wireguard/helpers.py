@@ -1,12 +1,9 @@
 import datetime
 import os
-import ipaddress
 import re
 import psutil
 import socket
 import logging
-
-from random import randint
 
 import requests
 from icmplib import multiping
@@ -31,12 +28,6 @@ def get_connection_status(latency_ms, packet_loss):
         res = {'status': 'WARNING', 'status_reason': 'Latency higher than 1000ms'}
     else:
         res = {'status': 'CONNECTED'}
-    res.update(
-        {
-            "latency_ms": latency_ms,
-            "packet_loss": packet_loss,
-        }
-    )
     return res
 
 
@@ -79,7 +70,8 @@ def find_free_port(SDN=False):
             continue
         else:
             return port
-    logger.debug(f"[FIND_FREE_PORT] Could not find free port in range {os.environ.get('SYNTROPY_PORT_RANGE')} will use default")
+    logger.debug(
+        f"[FIND_FREE_PORT] Could not find free port in range {os.environ.get('SYNTROPY_PORT_RANGE')} will use default")
     return None
 
 
@@ -137,7 +129,7 @@ def get_peer_info_all(ifname, wg, kind=None):
                     "allowed_ips": [allowed_ip['addr'] for allowed_ip in peer_dict['WGPEER_A_ALLOWEDIPS']],
                     "last_handshake": datetime.datetime.strptime(
                         peer_dict['WGPEER_A_LAST_HANDSHAKE_TIME']['latest handshake'],
-                        "%a %b %d %H:%M:%S %Y").isoformat(),
+                        "%a %b %d %H:%M:%S %Y").isoformat() if "1970" not in peer_dict['WGPEER_A_LAST_HANDSHAKE_TIME']['latest handshake'] else None,
                     "keep_alive_interval": peer_dict['WGPEER_A_PERSISTENT_KEEPALIVE_INTERVAL'],
                     "rx_bytes": peer_dict['WGPEER_A_RX_BYTES'],
                     "tx_bytes": peer_dict['WGPEER_A_TX_BYTES'],
@@ -175,15 +167,7 @@ def get_peer_ips(ifname, wg, internal_ip, kind=None):
     peers = get_peer_info_all(ifname, wg, kind=kind)
     for peer in peers:
         try:
-            peer_internal_ip = next(
-                (
-                    ip for ip in peer['allowed_ips']
-                    if
-                    ipaddress.ip_address(ip.split('/')[0]) in ipaddress.ip_network(f"{internal_ip.split('/')[0]}/16",
-                                                                                   False)
-                ),
-                None
-            )
+            peer_internal_ip = peer['allowed_ips'][0]
         except ValueError:
             continue
         if not peer_internal_ip:
@@ -218,7 +202,7 @@ def ping_internal_ips(ips, count=4, interval=0.5, icmp_id=10000):
     for res in ping_res:
         latency_ms = res.avg_rtt if res.is_alive else None
         packet_loss = res.packet_loss if res.is_alive else 1
-        result[res.address] = get_connection_status(latency_ms, packet_loss)
+        result[res.address] = {"latency_ms": latency_ms, "packet_loss": packet_loss}
     return result
 
 
@@ -240,11 +224,11 @@ def merged_peer_info(wg):
             "peers": peer_info
         }
 
-    pings = ping_internal_ips(peers_ips, count=1, interval=0.3)
+    pings = ping_internal_ips(peers_ips, count=3, interval=1)
     for iface, info in result.items():
         for public_key, data in info['peers'].items():
             data.update(pings[data['internal_ip']])
-    return result
+    return result, pings
 
 
 def set_iface_mtu(ifname: str, mtu: str):

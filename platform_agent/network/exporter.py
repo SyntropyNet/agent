@@ -3,12 +3,12 @@ import socket
 import os
 import threading
 
+from platform_agent.lib.file_helper import check_if_file_exist, read_tmp_file, format_results_for_controller
 from prometheus_client import start_http_server, Metric, REGISTRY
 
 from platform_agent.cmd.lsmod import module_loaded
 from platform_agent.cmd.wg_info import WireGuardRead
 from platform_agent.files.tmp_files import get_peer_metadata
-from platform_agent.wireguard.helpers import merged_peer_info
 from pyroute2 import WireGuard
 
 
@@ -19,9 +19,14 @@ class JsonCollector(object):
 
     def collect(self):
         # Fetch the JSON
-        peer_info = merged_peer_info(self.wg)
+        if check_if_file_exist("peers_info"):
+            peers_info = read_tmp_file("peers_info")
+            peers_info = format_results_for_controller(peers_info)
+        else:
+            peers_info = []
+            time.sleep(1)
         peer_metadata = get_peer_metadata()
-        for iface in peer_info:
+        for iface in peers_info:
             metric = Metric(f"interface_info_{iface['iface']}",
                             'interface_information', 'summary')
             for peer in iface['peers']:

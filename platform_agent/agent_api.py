@@ -10,7 +10,7 @@ from platform_agent.files.tmp_files import update_tmp_file
 from platform_agent.lib.get_info import gather_initial_info
 from platform_agent.network.exporter import NetworkExporter
 from platform_agent.network.kubernetes_watcher import KubernetesNetworkWatcher
-from platform_agent.wireguard import WgConfException, WgConf, WireguardPeerWatcher
+from platform_agent.wireguard import WgConfException, WgConf, WireguardPeerWatcher, WireguardPeerDataCollector
 from platform_agent.docker_api.docker_api import DockerNetworkWatcher
 from platform_agent.network.dummy_watcher import DummyNetworkWatcher
 from platform_agent.executors.wg_exec import WgExecutor
@@ -34,7 +34,8 @@ class AgentApi:
         self.bw_data_collector = BWDataCollect(self.runner)
         if prod_mode:
             threading.Thread(target=self.wg_executor.run).start()
-            threading.Thread(target=self.bw_data_collector.run).start()
+            WireguardPeerDataCollector(self.runner).start()
+            # threading.Thread(target=self.bw_data_collector.run).start()
             # self.network_exporter = NetworkExporter().start()
             self.wg_peers = WireguardPeerWatcher(self.runner).start()
             self.interface_watcher = InterfaceWatcher().start()
