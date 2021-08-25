@@ -1,5 +1,6 @@
 import logging
 import threading
+import time
 from datetime import datetime
 from pyroute2 import WireGuard
 
@@ -60,6 +61,9 @@ class WireguardPeerDataCollector(threading.Thread):
         last_pings_amount = 5
         while not self.stop_peer_data_collector.is_set():
             peer_info, pings = merged_peer_info(self.wg)
+            if not pings:
+                time.sleep(1)
+                continue
             last_x_pings.insert(0, pings)
             last_x_pings = last_x_pings[:last_pings_amount]
             packet_loss = self.calculate_packet_loss(last_x_pings)
