@@ -44,8 +44,8 @@ class DockerNetworkWatcher(threading.Thread):
                 }))
                 old_res = result
             if event.get('Type') == 'container' and event.get('Action') in ['create', 'destroy', 'stop', 'start']:
-                networks = self.docker_client.containers()
-                result = format_container_result(networks)
+                containers = self.docker_client.containers()
+                result = format_container_result(containers)
                 if old_res == result:
                     continue
                 self.ws_client.send(json.dumps({
