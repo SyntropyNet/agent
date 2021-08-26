@@ -224,13 +224,12 @@ class WgConf():
                 }
             )
         self.wg.set(ifname, peer=peer)
-        statuses = self.routes.ip_route_add(ifname, allowed_ips, gw_ipv4)
+        statuses = self.routes.ip_route_add(ifname, allowed_ips, gw_ipv4)[1:]  # Internal ip status check not needed.
         add_iptable_rules(allowed_ips)
         data = {
-                "connection_id": peer_metadata.get('connection_id'),
-                "public_key": public_key,
-                "statuses": statuses,
-            }
+            "connection_group_id": peer_metadata.get('connection_group_id'),
+            "statuses": statuses,
+        }
         self.client.batch_send.queue.put({"data": data, "msg_type": 'WG_ROUTE_STATUS'})
 
 

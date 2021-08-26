@@ -32,7 +32,7 @@ class BatchSender(threading.Thread):
             msg_type = message['msg_type']
             if not payloads.get(msg_type):
                 payloads[msg_type] = [message.get('data')]
-            else:
+            elif not message.get('data') in payloads[msg_type]:
                 payloads[msg_type].append(message.get('data'))
         return payloads
 
